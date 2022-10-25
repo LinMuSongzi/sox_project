@@ -1,6 +1,7 @@
 package com.example.cpp
 
 import android.os.Build
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -98,7 +99,14 @@ object SoxUtil {
 
     @JvmStatic
     external fun buildMusic(
-        fileInputPath: String = "${BASE_URL}/千山万水.mp3",
+        fileInputPath: String = (Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3").apply {
+            if (File(this).exists()) {
+                Log.i(
+                    TAG,
+                    "buildMusic: 存在~"
+                )
+            }
+        },
         fileOutputPath: String = FILE_MP3.absolutePath
     ): Int
 
