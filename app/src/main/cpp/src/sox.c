@@ -2597,19 +2597,19 @@ static int add_file(file_t const * const opts, char const * const filename)
 #endif
 static int add_glob_file(file_t const * const opts, char const * const filename)
 {
-  glob_t globbuf;
-  size_t i;
-
-  if (opts->no_glob)
-    return add_file(opts, filename);
-
-  if (glob(filename, GLOB_BRACE | GLOB_TILDE | GLOB_NOCHECK, NULL, &globbuf)) {
-    lsx_fail("glob: %s", strerror(errno));
-    exit(1);
-  }
-  for (i = 0; i < globbuf.gl_pathc; ++i)
-    add_file(opts, globbuf.gl_pathv[i]);
-  globfree(&globbuf);
+//  glob_t globbuf;
+//  size_t i;
+//
+//  if (opts->no_glob)
+//    return add_file(opts, filename);
+//
+//  if (glob(filename, GLOB_BRACE | GLOB_TILDE | GLOB_NOCHECK, NULL, &globbuf)) {
+//    lsx_fail("glob: %s", strerror(errno));
+//    exit(1);
+//  }
+//  for (i = 0; i < globbuf.gl_pathc; ++i)
+//    add_file(opts, globbuf.gl_pathv[i]);
+//  globfree(&globbuf);
   return 0;
 }
 #else

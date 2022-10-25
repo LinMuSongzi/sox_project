@@ -27,7 +27,7 @@
 #endif
 
 #else
-#include "/libgsm/gsm.h"
+#include "../libgsm/gsm.h"
 #endif
 
 /* Magic length writen when its not possible to write valid lengths.

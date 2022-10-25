@@ -23,20 +23,20 @@ class MainActivity : AppCompatActivity() {
      * A native method that is implemented by the 'cpp' native library,
      * which is packaged with this application.
      */
-    external fun stringFromJNI(): String
-//    external fun sum(one: Int,tow:Int):Int
-
-    companion object {
-        // Used to load the 'cpp' library on application startup.
-
-        @JvmStatic
-        external fun sum2(one: Int,tow:Int):Int
-
-        init {
-            System.loadLibrary("cpp")
-            System.loadLibrary("msz")
-        }
-    }
+//    external fun stringFromJNI(): String
+////    external fun sum(one: Int,tow:Int):Int
+//
+//    companion object {
+//        // Used to load the 'cpp' library on application startup.
+//
+//        @JvmStatic
+//        external fun sum2(one: Int,tow:Int):Int
+//
+//        init {
+//            System.loadLibrary("cpp")
+//            System.loadLibrary("msz")
+//        }
+//    }
 
 
 

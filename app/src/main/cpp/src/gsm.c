@@ -36,7 +36,7 @@
 #endif
 
 #else
-#include "/libgsm/gsm.h"
+#include "../libgsm/gsm.h"
 #endif
 
 #include <errno.h>

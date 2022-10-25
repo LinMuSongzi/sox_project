@@ -22,7 +22,7 @@
 #ifdef EXTERNAL_LPC10
 #include <lpc10.h>
 #else
-#include "/lpc10/lpc10.h"
+#include "../lpc10/lpc10.h"
 #endif
 
 /* Private data */
