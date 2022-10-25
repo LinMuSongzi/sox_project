@@ -26,11 +26,28 @@ android {
             }
         }
     }
-
+    signingConfigs {
+        shange {
+            storeFile file('playmusic.jks')//签名文件路径
+            storePassword "mdsoftware123"
+            keyAlias "mdsoftware"
+            keyPassword "mdsoftware123"  //签名密码
+            //签名md5 e84ab3c846c7cd71c971386f2992c34b
+        }
+    }
     buildTypes {
         release {
+            matchingFallbacks = ['release', 'preview', 'debug']
+            // 是否显示日志
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            // 是否混淆
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // 减少应用在运行时的内存消耗
+            zipAlignEnabled true
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 签名
+            signingConfig signingConfigs.shange
         }
     }
     compileOptions {
