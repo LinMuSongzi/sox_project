@@ -21,9 +21,9 @@
 
 #include "sox_i.h"
 
-#ifdef HAVE_IO_H
-  #include <io.h>
-#endif
+//#ifdef HAVE_IO_H
+//  #include <io.h>
+//#endif
 
 #ifdef HAVE_UNISTD_H
   #include <unistd.h>
@@ -99,7 +99,7 @@ FILE * lsx_tmpfile(void)
     int fildes;
     strcpy(name, path);
     strcat(name, end);
-    fildes = mkstemp(name);
+//    fildes = mkstemp(name);
 #ifdef HAVE_UNISTD_H
     lsx_debug(FAKE_MKSTEMP "mkstemp, name=%s (unlinked)", name);
     unlink(name);
