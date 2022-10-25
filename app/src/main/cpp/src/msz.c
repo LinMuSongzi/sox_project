@@ -132,5 +132,11 @@ Java_com_example_cpp_SoxUtil_buildMusic(JNIEnv *env, jclass jclazz, jstring file
  */
 JNIEXPORT int JNICALL
 Java_com_example_cpp_SoxUtil_initSox(JNIEnv *env, jclass clazz) {
-    return 1;
+    return sox_init();
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_cpp_SoxUtil_exeuteComment(JNIEnv *env, jclass clazz, jstring order) {
+
+    return 0;
 }
