@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.example.cpp.FileUtil.copyFile
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem.fromUri
 import com.google.android.exoplayer2.Player
@@ -20,7 +21,7 @@ object SoxUtil {
     val BASE_URL: String = "http://192.168.1.106:8080"
     const val TAG = "SOX_UTIL"
     val FILE_PARENT = SoxApplication.INSTANCE.cacheDir
-    val FILE_MP3 = File(FILE_PARENT, "qsws.mp3")
+    val FILE_MP3 = File(FILE_PARENT, "qsws.wav")
 
     //    @JvmStatic
 //    external fun sum(one: Int,tow:Int):Int
@@ -30,7 +31,7 @@ object SoxUtil {
     fun exoPlaySImple(
         lifecycleOwner: LifecycleOwner,
         playerView: PlayerControlView,
-        path: String? = "${BASE_URL}/千山万水.mp3"
+        path: String? = "${BASE_URL}/我的刻苦铭心的恋人.mp3"
     ) {
 
         if (playerView.tag != null) {
@@ -99,15 +100,18 @@ object SoxUtil {
 
     @JvmStatic
     external fun buildMusic(
-        fileInputPath: String = (Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3").apply {
-            if (File(this).exists()) {
-                Log.i(
-                    TAG,
-                    "buildMusic: 存在~"
-                )
-            }
-        },
-        fileOutputPath: String = FILE_MP3.absolutePath
+        fileInputPath: String =  //"${BASE_URL}/我的刻苦铭心的恋人.mp3"
+            (Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3").apply {
+                if (File(this).exists()) {
+                    Log.i(
+                        TAG,
+                        "buildMusic: 存在~ $this"
+                    )
+                }
+            },
+        fileOutputPath: String = (FILE_MP3.absolutePath).apply {
+            Log.i(TAG, "buildMusic: output file = $this")
+        }
     ): Int
 
     @JvmStatic
@@ -116,5 +120,14 @@ object SoxUtil {
 
     @JvmStatic
     external fun exeuteComment(order: String): Int
+
+    fun copy(mp3: String, file: File) {
+        copyFile(File(mp3), file)
+    }
+
+    fun show(s: String) {
+        Toast.makeText(SoxApplication.INSTANCE,s,Toast.LENGTH_SHORT).show()
+    }
+
 
 }
