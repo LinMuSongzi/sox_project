@@ -99,6 +99,11 @@ object SoxUtil {
     external fun subtraction(one: Int, tow: Int): Int
 
     @JvmStatic
+    external fun buildMusic2(i:String,fileOutputPath: String = (FILE_MP3.absolutePath).apply {
+        Log.i(TAG, "buildMusic: output file = $this")
+    }):Int
+
+    @JvmStatic
     external fun buildMusic(
         fileInputPath: String =  //"${BASE_URL}/我的刻苦铭心的恋人.mp3"
             (Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3").apply {
@@ -113,6 +118,9 @@ object SoxUtil {
             Log.i(TAG, "buildMusic: output file = $this")
         }
     ): Int
+
+    @JvmStatic
+    external fun handlerSteam(byteArray: ByteArray):ByteArray
 
     @JvmStatic
     external fun initSox(): Int
