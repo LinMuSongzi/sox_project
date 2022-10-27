@@ -82,7 +82,7 @@ object ExtensionMethod {
      */
     fun <E : BaseMoreViewEngine<*, *>> Class<E>.startRecycleActivity(
         title: String? = null,
-        barColor: Int = R.color.bg_white,
+        barColor: Int = com.musongzi.core.R.color.bg_white,
         data: Bundle? = null,
         onInfoObserver: ((info: CollectionsViewModel.CollectionsInfo) -> Unit)? = null
     ) {
@@ -218,7 +218,7 @@ object ExtensionMethod {
         title: String? = null,
         //其实必须是NormalFragmentActivity 子类
         activity: Class<*>? = MszFragmentActivity::class.java,
-        barColor: Int = R.color.bg_white,
+        barColor: Int = com.musongzi.core.R.color.bg_white,
         dataBundle: Bundle? = null,
         businessClassName: String? = null
     ) {

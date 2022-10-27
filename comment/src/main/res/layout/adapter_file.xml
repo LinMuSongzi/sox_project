@@ -17,14 +17,14 @@
         android:padding="10dp">
 
         <ImageView
-            onClickAction=""
-            onClickClass="哈哈"
+            android:id="@+id/id_titleImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:padding="5dp"
             tools:src="@mipmap/ic_normal_women_hear" />
 
         <TextView
+            android:id="@+id/id_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

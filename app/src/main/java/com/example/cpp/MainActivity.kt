@@ -9,9 +9,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.pm.PermissionInfoCompat
-import com.example.cpp.SoudSoxBusiness.Companion.openSoxBusinessByInputStream
-import com.example.cpp.SoudSoxBusiness.Companion.pathConvetInputStream
+import androidx.databinding.DataBindingUtil
 import com.example.cpp.databinding.ActivityMainBinding
 import java.io.File
 
@@ -23,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
         setContentView(binding.root)
         // Example of a call to a native method
         binding.idPlayText.text =

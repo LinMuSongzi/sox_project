@@ -31,7 +31,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitManager {
 
-    private static final String URL = "http://shange.musiccz.net:6060/";
     private static final String URL2 = "http://192.168.1.106:8080/";
 
     static RetrofitManager MANAGER;
@@ -57,7 +56,11 @@ public class RetrofitManager {
         if (callBack != null && callBack.getRetrofit() != null) {
             retrofit = callBack.getRetrofit();
         } else {
-            retrofit = new Retrofit.Builder().baseUrl(URL2)
+            String url = callBack.baseUrl();
+            if (url == null) {
+                url = URL2;
+            }
+            retrofit = new Retrofit.Builder().baseUrl(url)
                     .client(getOkHttpCLient())
                     .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create()).build();
@@ -75,8 +78,8 @@ public class RetrofitManager {
         if (okHttpClient == null) {
             Cache cache = new Cache(ActivityThreadHelp.getCurrentApplication().getCacheDir(), 1024 * 1024 * 200);
             okHttpClient = new OkHttpClient().newBuilder()
-            //添加日志拦截器
-            .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
+                    //添加日志拦截器
+                    .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
         }
         return okHttpClient;
     }
@@ -134,7 +137,7 @@ public class RetrofitManager {
                             Log.i(TAG, "invoke: 5");
                             returnInstance = ((Observable<?>) returnInstance).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).compose(want.bindToLifecycle());
                         }
-                        Log.i(TAG, "invoke: 6 "+returnInstance);
+                        Log.i(TAG, "invoke: 6 " + returnInstance);
                         return returnInstance;
                     }
                 };
@@ -164,6 +167,10 @@ public class RetrofitManager {
 
         @Nullable
         Retrofit getRetrofit();
+
+        @Nullable
+        String baseUrl();
+
     }
 
     static final String TAG = "InvocationHandler";

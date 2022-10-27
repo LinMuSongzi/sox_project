@@ -86,15 +86,15 @@ class SoudSoxBusiness private constructor(
         private fun handlerBusiness() {
 
 //            val lifecycle = soudSoxBusiness.lifecycleOwner.lifecycle
-            if (soudSoxBusiness.inputPath != null) {
+            inputStream = if (soudSoxBusiness.inputPath != null) {
                 val inputFile = File(soudSoxBusiness.inputPath)
                 Log.i(
                     TAG,
                     "audio_Format: 文件中长度 ${inputFile.length()} 字节 , 约 ${inputFile.length() / 1024} kb"
                 )
-                inputStream = FileInputStream(inputFile)
+                FileInputStream(inputFile)
             } else {
-                inputStream = soudSoxBusiness.inputStreamMethod.invoke()
+                soudSoxBusiness.inputStreamMethod.invoke()
             }
             val byteHelps = ByteArray(20)
 
@@ -170,14 +170,8 @@ class SoudSoxBusiness private constructor(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build(),
-                    AudioFormat.Builder().setSampleRate(SAMPLE_RATE_INHZ)
-                        .setEncoding(AUDIO_FORMAT)
-                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-                        .build(),
-                    minBufferSize,
-                    AudioTrack.MODE_STREAM,
-                    AudioManager.AUDIO_SESSION_ID_GENERATE
+                        .build(), Builder().setSampleRate(SAMPLE_RATE_INHZ).setEncoding(AUDIO_FORMAT).setChannelMask(CHANNEL_OUT_MONO).build(),
+                    minBufferSize, MODE_STREAM, AudioManager.AUDIO_SESSION_ID_GENERATE
                 )
                 soudSoxBusiness.audioTrack = audioTrack
                 soudSoxBusiness.audioTrack?.play()

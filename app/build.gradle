@@ -1,7 +1,12 @@
-plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+//plugins {
+//    id 'com.android.application'
+//    id 'org.jetbrains.kotlin.android'
+//}
 
 android {
     compileSdk 32
@@ -9,6 +14,9 @@ android {
         main {
             jniLibs.srcDirs = ['libs']
         }
+    }
+    androidExtensions {
+        experimental = true
     }
     defaultConfig {
         applicationId "com.example.cpp"
@@ -63,8 +71,10 @@ android {
             version '3.18.1'
         }
     }
-    buildFeatures {
-        viewBinding true
+
+    dataBinding {
+//        noinspection DataBindingWithoutKapt
+        enabled = true
     }
     ndkVersion '25.1.8937393'
 }
@@ -72,7 +82,6 @@ android {
 dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.18.1'
-
 
 
     api 'androidx.core:core-ktx:1.7.0'

@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.ViewTarget
+import com.musongzi.comment.R
 import com.musongzi.core.ExtensionCoreMethod.androidColorGet
 import com.musongzi.core.util.ActivityThreadHelp
 import com.musongzi.core.util.InjectionHelp
@@ -78,6 +79,15 @@ fun ImageView.showImage(uri: Any?, conifgOverride: (() -> Pair<Int, Int>)? = nul
         }
         Glide.with(this).loadByAny(it).placeholderRes().errorRes().memoryCacheStrategy()
             .overrideInto(this, conifgOverride)
+    }
+}
+
+@BindingAdapter("setSelectColorByTextView")
+fun setSelectColorByTextView(textView: TextView, boolean: Boolean) {
+    if(boolean) {
+        textView.setTextColor(com.musongzi.core.R.color.text_color_normal.androidColorGet())
+    }else{
+        textView.setTextColor(com.musongzi.core.R.color.text_color_unSelect.androidColorGet())
     }
 }
 

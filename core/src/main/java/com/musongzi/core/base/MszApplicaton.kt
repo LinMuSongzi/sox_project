@@ -11,7 +11,7 @@ import com.musongzi.core.itf.IHolderApplication
 /*** created by linhui * on 2022/8/25 */
 abstract class MszApplicaton : MultiDexApplication(), IHolderApplication {
 
-    companion object{
+    companion object {
         const val UNCATCH_MANAGER = "UncatchExcetionHelp"
     }
 
@@ -20,10 +20,12 @@ abstract class MszApplicaton : MultiDexApplication(), IHolderApplication {
 //        ManagerUtil.
         ManagerUtil.init(getManagers().let {
             val h = HashSet<ManagerInstanceHelp>()
-            if(enableWriteException()){
+            if (enableWriteException()) {
                 h.add(UncatchExcetionHelp())
             }
-            h.addAll(it)
+            if (it != null) {
+                h.addAll(it)
+            }
             h
         }, getManagerClassLoader())
     }
@@ -36,16 +38,16 @@ abstract class MszApplicaton : MultiDexApplication(), IHolderApplication {
         return classLoader
     }
 
-    protected abstract fun getManagers():Array<ManagerInstanceHelp>
+    protected abstract fun getManagers(): Array<ManagerInstanceHelp>?
 
 
     override fun getHolderContext(): Context {
         return this
     }
 
-    internal class UncatchExcetionHelp :ManagerInstanceHelp{
+    internal class UncatchExcetionHelp : ManagerInstanceHelp {
         override fun instance(): InstanceManager? {
-           return UncatchExcetionManager()
+            return UncatchExcetionManager()
         }
 
         override fun key(): String {
