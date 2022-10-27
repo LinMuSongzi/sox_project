@@ -1,8 +1,9 @@
 package com.example.cpp
 
 import android.app.Application
+import androidx.multidex.MultiDexApplication
 
-class SoxApplication: Application() {
+class SoxApplication: MultiDexApplication() {
 
 
 
