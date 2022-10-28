@@ -57,7 +57,7 @@ class ByteArrayEngine : BaseMoreViewEngine<Byte, List<Byte>>(),
 
         ;//"0x"+Integer.toHexString(i.byte)
 
-        if (p > 44) {
+        if (p > 43) {
             d.idText.text = Html.fromHtml("<font color=#00ff00>$i</font><br/><font color=#cccccc>$p</font>")
         } else {
             d.idText.text = Html.fromHtml("<font color=#ff0000>$i</font><br/><font color=#cccccc>$p</font>")
@@ -85,7 +85,7 @@ class ByteArrayEngine : BaseMoreViewEngine<Byte, List<Byte>>(),
     }
 
     override fun getLayoutManger(): RecyclerView.LayoutManager? {
-        return GridLayoutManager(null, 10, LinearLayoutManager.VERTICAL, false)
+        return GridLayoutManager(null, 8, LinearLayoutManager.VERTICAL, false)
     }
 
     override fun transformDataToList(entity: List<Byte>) = entity

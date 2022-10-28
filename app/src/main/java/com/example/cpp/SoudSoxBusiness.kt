@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.example.cpp.SoudSoxBusiness.Companion.TAG
 import com.example.cpp.data.EffectsBean
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.example.cpp.vm.MusicEffectsViewModel.Companion.CHOOSE_EFFECY_KEY
@@ -25,6 +26,7 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
+import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.math.abs
 
@@ -63,6 +65,20 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
         }
     }
 
+    fun observer(p: String) {
+        synchronized(SoudSoxBusiness::class.java) {
+            if (init) {
+                return
+            }
+            init = true
+        }
+        inputPath = p
+//        this.inputStreamMethod = inputStreamMethod
+        if (audioTrack == null) {
+            iAgent.getThisLifecycle()?.lifecycle?.addObserver(this)
+        }
+    }
+
 
     private fun initPre() {
         val handlerThread = HandlerThread("aaa")
@@ -85,6 +101,7 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
             }
         }
 
+
         override fun run() {
             val business = soudSoxBusiness
             val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle()?.lifecycle ?: return
@@ -99,14 +116,12 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
         }
 
         private fun handlerBusiness() {
-
+            var lenght: Long? = null
 //            val lifecycle = soudSoxBusiness.lifecycleOwner.lifecycle
             inputStream = if (soudSoxBusiness.inputPath != null) {
                 val inputFile = File(soudSoxBusiness.inputPath)
-                Log.i(
-                    TAG,
-                    "audio_Format: 文件中长度 ${inputFile.length()} 字节 , 约 ${inputFile.length() / 1024} kb"
-                )
+                lenght = inputFile.length()
+                Log.i(TAG, "audio_Format: 文件中长度 ${lenght} 字节 , 约 ${inputFile.length() / 1024} kb")
                 FileInputStream(inputFile)
             } else {
                 soudSoxBusiness.inputStreamMethod?.invoke()!!
@@ -132,14 +147,14 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
             val sampleByteArray = ByteArray(4);
 
             val simpleRate = inputStream.read(sampleByteArray).let {
+//                val _ff = 1.or(8) - 1
+                val sr = convetInt(sampleByteArray,true)
                 Log.i(
                     TAG,
-                    "audio_Format simpleRate byteHelps: ${sampleByteArray[0]} , ${sampleByteArray[1]} , ${sampleByteArray[2]} , ${sampleByteArray[3]}\n"
+                    "audio_Format simpleRate byteHelps: 第一位 = ${sampleByteArray[0]} ,第二位 ${sampleByteArray[1].toInt()} , ${sampleByteArray[2]} , ${sampleByteArray[3]}\n"
                 )
-                val ret = 44100//abs(sampleByteArray[0] * 1 * sampleByteArray[1])
-//                Log.i(TAG, "run: ${Int.in}")
-                Log.i(TAG, "audio_Format simpleRate byteHelps:ret =  $ret\n")
-                ret
+                Log.i(TAG, "audio_Format simpleRate byteHelps:ret =  $sr\n")
+                sr
             }//采样率(Sample, Rate)
 
             inputStream.read(byteHelps, 0, 4)
@@ -198,11 +213,24 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
                 soudSoxBusiness.executors.execute(MusicPlayRunnable(soudSoxBusiness))
             }
             // SampleRate * Channels * BitsPerSample / 8
-            val size = abs(SAMPLE_RATE_INHZ) *  channels  * bit / 8
+            val size = simpleRate * channels * bit / 8
+
+            lenght?.apply {
+                val time = (this - 44) / size
+                Log.i(TAG, "audio_Format time: $time , simpleRate = $simpleRate")
+            }
+
+            /**
+             *
+             *
+             *
+             */
+
             byteRead = ByteArray(size)
             soudSoxBusiness.readyWrite = ByteArray(size)
             soudSoxBusiness.readLeng = top
         }
+
 
     }
 
@@ -267,4 +295,35 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
     }
 
 
+}
+
+
+private fun convetInt(sampleByteArray: ByteArray, leOrRight: Boolean): Int {
+    val _1 = sumIntByByte(byte = sampleByteArray[0])
+    val _2 = sumIntByByte(byte = sampleByteArray[1])
+    val _3 = sumIntByByte(byte = sampleByteArray[2])
+    val _4 = sumIntByByte(byte = sampleByteArray[3])
+    Log.i(TAG, "audio_Format convetInt: $_1 , $_2 , $_3 , $_4")
+    return if (leOrRight) {
+        _4.shl(24).or(_3.shl(16)).or(_2.shl(8)).or(_1)
+    } else {
+        _1.shl(24).or(_2.shl(16)).or(_3.shl(8)).or(_4)
+    }
+
+
+}
+
+fun sumIntByByte(byte: Byte): Int {
+    return if (byte >= 0) {
+        byte.toInt()
+    } else {
+        ((-byte)).or(128)
+    }
+
+
+    /**
+     *
+     * 10100 0000
+     *
+     */
 }

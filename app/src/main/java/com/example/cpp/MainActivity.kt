@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.cpp.SoudSoxBusiness.Companion.pathConvetInputStream
@@ -22,6 +23,7 @@ import com.musongzi.comment.activity.MszFragmentActivity
 import com.musongzi.comment.business.PermissionHelpBusiness.Companion.getNext
 import com.musongzi.core.itf.INotifyDataSetChanged
 import java.io.File
+import java.io.RandomAccessFile
 
 class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 
@@ -30,8 +32,6 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 //    var soxBusiness: SoudSoxBusiness? = null
 
     var fragment: Fragment? = null
-    val pathNeed =
-        Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,35 +55,20 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
             }
         }
 
+        showFragmentByte()
+
         // Example of a call to a native method
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()
         binding.idPlayText.setOnClickListener {
 
-            if (fragment == null) {
-                fragment = ByteArrayEngine::class.java.convertFragment(Bundle().apply {
-                    putString(PATH_KEY, pathNeed)
-                })
-                supportFragmentManager.beginTransaction().replace(
-                    R.id.id_byte_layout,
-                    fragment!!
-                ).commitNow()
-            } else {
-                val fragment = this.fragment!!
-                if (fragment.isHidden) {
-                    supportFragmentManager.beginTransaction().show(fragment).commitNow()
-                } else {
-                    supportFragmentManager.beginTransaction().hide(fragment).commitNow()
-                }
-            }
 
 
-//            SoudSoxBusiness::class.java.instanceByVm(
-//                MusicEffectsViewModel::class.java,
-//                business.topViewModelProvider()
-//            )?.observer {
-//                pathNeed.pathConvetInputStream()
-//            }
+
+            SoudSoxBusiness::class.java.instanceByVm(
+                MusicEffectsViewModel::class.java,
+                business.topViewModelProvider()
+            )?.observer(musicPath)
 
 //            SoxUtil.exoPlaySImple(this, null,
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
@@ -125,6 +110,26 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
             }
         }
         launch.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    private fun showFragmentByte() {
+        if (fragment == null) {
+            binding.idByteLayout.visibility = View.VISIBLE
+            fragment = ByteArrayEngine::class.java.convertFragment(Bundle().apply {
+                putString(PATH_KEY, musicPath)
+            })
+            supportFragmentManager.beginTransaction().replace(
+                R.id.id_byte_layout,
+                fragment!!
+            ).commitNow()
+        } else {
+            val fragment = this.fragment!!
+            if (fragment.isHidden) {
+                supportFragmentManager.beginTransaction().show(fragment).commitNow()
+            } else {
+                supportFragmentManager.beginTransaction().hide(fragment).commitNow()
+            }
+        }
     }
 
     /**

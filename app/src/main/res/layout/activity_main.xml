@@ -57,6 +57,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
+            android:visibility="gone"
             android:id="@+id/id_byte_layout"
             android:layout_width="match_parent"
             android:layout_height="500dp"/>
