@@ -51,8 +51,8 @@ class MainActivity : MszFragmentActivity(),INotifyDataSetChanged {
 //            }
 //            soxBusiness?.observer()
             SoxUtil.exoPlaySImple(this, null,
-//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
-        SoxUtil.FILE_MP3.absolutePath)
+            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
+        //SoxUtil.FILE_MP3.absolutePath)
 //            SoxUtil.exeuteComment("soxi ${SoxUtil.BASE_URL}/千山万水.mp3")
         }
 

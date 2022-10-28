@@ -97,7 +97,7 @@ object ExtensionCoreMethod {
     fun ViewDataBinding.businessSet(business: Any) {
         exceptionRun {
             javaClass.getMethod("setBusiness", business::class.java).invoke(this, business)
-            Log.i("businessSet", ": succeed " + business.javaClass.simpleName)
+//            Log.i("businessSet", ": succeed " + business.javaClass.simpleName)
         }
     }
 
@@ -110,10 +110,10 @@ object ExtensionCoreMethod {
             if (method == null) {
                 method = javaClass.getMethod("set${TextUtil.capitalizationText(entity)}", clazz)
                 CACHE_BEAN_METHOD[key] = method
-                Log.i(BEAN_TAG, ": succeed: find")
-                Log.i(BEAN_TAG, ": succeed " + clazz.simpleName)
+//                Log.i(BEAN_TAG, ": succeed: find")
+//                Log.i(BEAN_TAG, ": succeed " + clazz.simpleName)
             }else{
-                Log.i(BEAN_TAG, ": succeed: cache")
+//                Log.i(BEAN_TAG, ": succeed: cache")
             }
             method!!.invoke(this, entityObject)
         }

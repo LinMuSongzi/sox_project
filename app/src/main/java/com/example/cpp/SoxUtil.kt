@@ -5,12 +5,14 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.cpp.FileUtil.copyFile
+import com.example.cpp.data.EffectsBean
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem.fromUri
 import com.google.android.exoplayer2.Player
@@ -105,6 +107,15 @@ object SoxUtil {
     external fun buildMusic2(i:String,fileOutputPath: String = (FILE_MP3.absolutePath).apply {
         Log.i(TAG, "buildMusic: output file = $this")
     }):Int
+
+    @Nullable
+    fun buildMusicByEffectInfo(effectsBean: EffectsBean,byteArray: ByteArray):ByteArray{
+       return buildMusicByEffectInfo(effectsBean.r_name,effectsBean.charParams,byteArray)
+    }
+
+    @JvmStatic
+    @Nullable
+    external fun buildMusicByEffectInfo(effectRealName: String?,charArray: CharArray?,byteArray: ByteArray):ByteArray
 
     @JvmStatic
     external fun buildMusic(

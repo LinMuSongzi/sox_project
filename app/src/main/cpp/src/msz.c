@@ -200,7 +200,7 @@ Java_com_example_cpp_SoxUtil_exeuteComment(JNIEnv *env, jclass clazz, jstring or
 }
 
 JNIEXPORT char *mallocByte(int len) {
-    return (char *)malloc(len * sizeof(char));
+    return (char *) malloc(len * sizeof(char));
 }
 
 jbyteArray JNICALL
@@ -222,11 +222,11 @@ Java_com_example_cpp_SoxUtil_handlerSteam(JNIEnv *env, jclass clazz, jbyteArray 
 
     (*env)->ReleaseByteArrayElements(env, bytearray, bytes, 0);
 
-    static sox_format_t  *out,*in;
+    static sox_format_t *out, *in;
 //
     assert(in = sox_open_mem_read(input_chars, chars_len, NULL, NULL, NULL));
 
-    assert(out = sox_open_mem_write(output_chars, chars_len, &in->signal, NULL, NULL,NULL));
+    assert(out = sox_open_mem_write(output_chars, chars_len, &in->signal, NULL, NULL, NULL));
 
     sox_effects_chain_t *chain;
     sox_effect_t *e;
@@ -252,7 +252,73 @@ Java_com_example_cpp_SoxUtil_handlerSteam(JNIEnv *env, jclass clazz, jbyteArray 
     sox_close(in);
     sox_quit();
 
-    jbyteArray jbyteArray = (*env)->NewByteArray(env,chars_len);//申明数组，与char字符长度一致
-    (*env)->SetByteArrayRegion(env,jbyteArray, 0, chars_len, (jbyte *) output_chars);//赋值到jbyteArray
+    jbyteArray jbyteArray = (*env)->NewByteArray(env, chars_len);//申明数组，与char字符长度一致
+    (*env)->SetByteArrayRegion(env, jbyteArray, 0, chars_len,
+                               (jbyte *) output_chars);//赋值到jbyteArray
     return jbyteArray;
+}
+
+JNIEXPORT jbyteArray JNICALL
+Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, jstring effect,
+                                                    jcharArray charPare,
+                                                    jbyteArray byte_array) {
+
+    if (effect == NULL) {
+        return NULL;
+    }
+    if (charPare == NULL) {
+        return NULL;
+    }
+
+    assert(sox_init() == SOX_SUCCESS);
+
+
+    jbyte *bytes;
+    bytes = (*env)->GetByteArrayElements(env, byte_array, 0);
+    int chars_len = (*env)->GetArrayLength(env, byte_array);
+
+    char *input_chars = mallocByte(chars_len);;
+    char *output_chars = mallocByte(chars_len);
+
+    memset(input_chars, 0, chars_len + 1);
+    memcpy(input_chars, bytes, chars_len);
+    input_chars[chars_len] = 0;
+
+    (*env)->ReleaseByteArrayElements(env, byte_array, bytes, 0);
+
+    static sox_format_t *out, *in;
+//
+    assert(in = sox_open_mem_read(input_chars, chars_len, NULL, NULL, NULL));
+
+    assert(out = sox_open_mem_write(output_chars, chars_len, &in->signal, NULL, NULL, NULL));
+
+    sox_effects_chain_t *chain;
+    sox_effect_t *e;
+    char *args[10];
+
+    chain = sox_create_effects_chain(&in->encoding, &out->encoding);
+
+
+    e = sox_create_effect(sox_find_effect("bass"));
+    args[0] = "50";
+    assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+    //增加效果到效果链
+    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+    free(e);
+
+    //让整个效果器运行起来，直到遇到eof
+    sox_flow_effects(chain, NULL, NULL);
+
+    //clean
+    sox_delete_effects_chain(chain);
+
+    sox_close(out);
+    sox_close(in);
+    sox_quit();
+
+    jbyteArray jbyteArray = (*env)->NewByteArray(env, chars_len);//申明数组，与char字符长度一致
+    (*env)->SetByteArrayRegion(env, jbyteArray, 0, chars_len,
+                               (jbyte *) output_chars);//赋值到jbyteArray
+    return jbyteArray;
+
 }

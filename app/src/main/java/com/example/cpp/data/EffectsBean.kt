@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Keep
 @Parcelize
-data class EffectsBean(
+class EffectsBean(
     @SerializedName("c_name")
     val cName: String?,
     @SerializedName("content")
@@ -16,4 +16,9 @@ data class EffectsBean(
     @SerializedName("e_name")
     val eName: String?,
     val r_name:String?
-) : Parcelable, BaseChooseBean()
+) : Parcelable, BaseChooseBean(){
+
+
+    var charParams:CharArray? = null
+
+}
