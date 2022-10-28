@@ -1,19 +1,26 @@
 package com.example.cpp
 
 import android.Manifest
-import android.app.backup.FileBackupHelper
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import com.example.cpp.data.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
+import com.example.cpp.vm.MusicEffectsViewModel
+import com.musongzi.comment.ExtensionMethod.instance
+import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
+import com.musongzi.comment.activity.MszFragmentActivity
+import com.musongzi.core.itf.INotifyDataSetChanged
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : MszFragmentActivity(),INotifyDataSetChanged {
+
+
+
 
     private lateinit var binding: ActivityMainBinding
     var soxBusiness: SoudSoxBusiness? = null
@@ -21,8 +28,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
-        setContentView(binding.root)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setChildMainView(binding.root)
+
+
+        MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())?.apply {
+            runOnUiThread {
+                MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(this){
+                    binding.chooseBinding.bean = it
+                }
+                getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
+                loaderEffectsData()
+            }
+        }
+
         // Example of a call to a native method
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()
@@ -31,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 //                soxBusiness =  musicPath.openSoxBusinessByInputStream(this)
 //            }
 //            soxBusiness?.observer()
-            SoxUtil.exoPlaySImple(this, binding.idPlayView,
+            SoxUtil.exoPlaySImple(this, null,
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
         SoxUtil.FILE_MP3.absolutePath)
 //            SoxUtil.exeuteComment("soxi ${SoxUtil.BASE_URL}/千山万水.mp3")
@@ -93,6 +112,26 @@ class MainActivity : AppCompatActivity() {
             Log.i(TAG, ": SoxUtil ini $state")
 //            System.loadLibrary("msz")
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun notifyDataSetChanged() {
+        Log.i(TAG, "notifyDataSetChanged: 1231231231231231231  itemCount = ${binding.idRecyclerView.adapter?.itemCount}")
+//        runOnUiThread {
+            binding.idRecyclerView.adapter?.notifyDataSetChanged()
+//        }
+    }
+
+    override fun notifyDataSetChangedItem(postiont: Int) {
+
+    }
+
+    override fun showDialog(msg: String?) {
+
+    }
+
+    override fun disimissDialog() {
+
     }
 
 

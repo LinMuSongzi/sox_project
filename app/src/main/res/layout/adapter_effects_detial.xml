@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="bean"
+            type="com.example.cpp.data.EffectsBean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp">
+
+
+        <TextView
+            android:id="@+id/id_c_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:paddingHorizontal="10dp"
+            setTextNormal="@{bean.CName}"
+            android:textColor="@color/text_color_normal"
+            android:textSize="14dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="贝斯" />
+
+        <TextView
+            android:id="@+id/id_e_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            setTextNormal="@{bean.r_name}"
+            android:textColor="@color/text_color_unSelect"
+            android:textSize="13dp"
+            android:layout_marginRight="10dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/id_detail_name"
+            app:layout_constraintTop_toBottomOf="@+id/id_c_name"
+
+            tools:text="哈哈哈哈" />
+
+        <TextView
+            android:id="@+id/id_detail_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            setTextNormal="@{bean.content}"
+            android:textColor="#4DA7E4"
+            android:textSize="14dp"
+            android:layout_marginLeft="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/id_e_name"
+            tools:text="ajskdhkjahsdkjhalhk" />
+
+        <View
+            tools:visibility="visible"
+            android:visibility="gone"
+            viewVisibility="@{bean.choose}"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:background="#55FA11"
+            app:layout_constraintBottom_toBottomOf="@+id/id_detail_name"
+            app:layout_constraintRight_toRightOf="@+id/id_e_name"
+            app:layout_constraintTop_toTopOf="@+id/id_c_name" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:background="#dddddd"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="@+id/id_detail_name"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

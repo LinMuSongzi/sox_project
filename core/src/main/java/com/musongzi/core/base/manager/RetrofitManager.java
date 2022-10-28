@@ -31,8 +31,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitManager {
 
-    private static final String URL2 = "http://192.168.1.106:8080/";
-
     static RetrofitManager MANAGER;
     private Map<String, Object> apis = new HashMap<>();
 
@@ -48,18 +46,15 @@ public class RetrofitManager {
     private RetrofitManager() {
     }
 
-    public void init(CallBack callBack) {
+    public void init(@NonNull CallBack callBack) {
         if (retrofit != null) {
             return;
         }
         setCallBack(callBack);
-        if (callBack != null && callBack.getRetrofit() != null) {
+        if (callBack.getRetrofit() != null) {
             retrofit = callBack.getRetrofit();
         } else {
             String url = callBack.baseUrl();
-            if (url == null) {
-                url = URL2;
-            }
             retrofit = new Retrofit.Builder().baseUrl(url)
                     .client(getOkHttpCLient())
                     .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
@@ -163,14 +158,24 @@ public class RetrofitManager {
 
     public interface CallBack extends InvocationHandler {
         @Nullable
-        OkHttpClient getOkHttpCLient();
+        default OkHttpClient getOkHttpCLient(){
+            return null;
+        }
 
         @Nullable
-        Retrofit getRetrofit();
+        default Retrofit getRetrofit(){
+            return null;
+        }
 
-        @Nullable
+
+        @NotNull
         String baseUrl();
 
+        @Nullable
+        @Override
+        default Object invoke(Object proxy, Method method, Object[] args) throws Throwable{
+            return null;
+        }
     }
 
     static final String TAG = "InvocationHandler";

@@ -6,6 +6,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import com.musongzi.core.base.bean.BusinessInfo
 import com.musongzi.core.base.business.BaseLifeBusiness
+import com.musongzi.core.base.business.itf.IHolderSupportActivityBusiness
+import com.musongzi.core.base.business.itf.ISupprotActivityBusiness
 import com.musongzi.core.itf.*
 import com.musongzi.core.itf.holder.*
 import com.musongzi.core.util.InjectionHelp
@@ -49,7 +51,15 @@ abstract class MszViewModel<C : IClient?, B : IBusiness>() : DataDriveViewModel<
     override fun indexBusinessActualTypeArgument() = 1
 
     override fun getHolderClient(): C? {
-        return InjectionHelp.checkClient(holderActivity?.get()?.getClient() as? C, javaClass, indexClientActualTypeArgument())
+        return if(holderActivity is ISupprotActivityBusiness){
+            holderActivity as? C
+        }else {
+            InjectionHelp.checkClient(
+                holderActivity?.get()?.getClient() as? C,
+                javaClass,
+                indexClientActualTypeArgument()
+            )
+        }
     }
 
     protected fun indexClientActualTypeArgument(): Int = 0;

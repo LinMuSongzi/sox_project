@@ -1,11 +1,13 @@
 package com.example.cpp
 
+import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.cpp.FileUtil.copyFile
@@ -14,13 +16,14 @@ import com.google.android.exoplayer2.MediaItem.fromUri
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Player.STATE_READY
 import com.google.android.exoplayer2.ui.PlayerControlView
+import com.musongzi.core.util.ActivityThreadHelp
 import java.io.File
 
 object SoxUtil {
 
     val BASE_URL: String = "http://192.168.1.106:8080"
     const val TAG = "SOX_UTIL"
-    val FILE_PARENT = SoxApplication.INSTANCE.cacheDir
+    val FILE_PARENT = ActivityThreadHelp.getCurrentApplication().cacheDir
     val FILE_MP3 = File(FILE_PARENT, "qsws.wav")
 
     //    @JvmStatic
@@ -30,11 +33,11 @@ object SoxUtil {
     @RequiresApi(Build.VERSION_CODES.M)
     fun exoPlaySImple(
         lifecycleOwner: LifecycleOwner,
-        playerView: PlayerControlView,
+        playerView: PlayerControlView? = null,
         path: String? = "${BASE_URL}/我的刻苦铭心的恋人.mp3"
     ) {
-
-        if (playerView.tag != null) {
+        val context = (lifecycleOwner as? Context)?:(lifecycleOwner as Fragment).requireContext()
+        if (playerView?.tag != null) {
             val p = playerView.tag as? Player
             if (true == p?.isPlaying) {
                 p?.pause()
@@ -48,24 +51,24 @@ object SoxUtil {
         if (path == null) {
             ouputPlayFile = FILE_MP3
             if (!ouputPlayFile.exists()) {
-                Toast.makeText(playerView.context, "不存在播放文件", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "不存在播放文件", Toast.LENGTH_SHORT).show()
                 return
             }
         }
 
         //1. 创建播放器
-        val player = ExoPlayer.Builder(playerView.context).build()
+        val player = ExoPlayer.Builder(context).build()
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (STATE_READY == playbackState) {
-                    playerView.tag = player
+                    playerView?.tag = player
                 }
             }
         })
 //        player.printCurPlaybackState("init")  //  此时处于STATE_IDLE = 1;
 
         //2. 播放器和播放器容器绑定
-        playerView.player = player
+        playerView?.player = player
 
         //3. 设置数据源
         //音频
@@ -134,7 +137,7 @@ object SoxUtil {
     }
 
     fun show(s: String) {
-        Toast.makeText(SoxApplication.INSTANCE,s,Toast.LENGTH_SHORT).show()
+        Toast.makeText(ActivityThreadHelp.getCurrentApplication(),s,Toast.LENGTH_SHORT).show()
     }
 
 

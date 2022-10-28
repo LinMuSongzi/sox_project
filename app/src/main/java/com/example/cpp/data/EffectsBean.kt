@@ -15,18 +15,5 @@ data class EffectsBean(
     val content: String?,
     @SerializedName("e_name")
     val eName: String?,
-    val r_name:String?,
-    @SerializedName("e_child")
-    val childs: List<EffectsBean>? = null
-) : Parcelable, BaseChooseBean() {
-
-    override fun isChoose(): Boolean {
-        return super.isChoose()
-    }
-
-    override fun choose(b: Boolean) {
-        if (childs != null && childs.isNotEmpty()) {
-            super.choose(b)
-        }
-    }
-}
+    val r_name:String?
+) : Parcelable, BaseChooseBean()

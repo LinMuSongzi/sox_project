@@ -98,6 +98,7 @@ internal class ManagerService : IManagerService,IHolderLockObject {
 //        val clazzR = Class.forName("$packageName.R${'$'}array")
 //        val field = clazzR.getDeclaredField(MANAGER_ARRAY_NAME)
 //        val id = field.get(null) as Int
+
         val array = ActivityThreadHelp.getCurrentApplication().resources.getStringArray(id)
         for (clazzName in array) {
             try {

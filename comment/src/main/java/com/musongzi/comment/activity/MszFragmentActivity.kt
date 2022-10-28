@@ -42,19 +42,23 @@ open class MszFragmentActivity : AppCompatActivity(), IHolderContext,
     protected fun setChildMainView(view: View?) {
 //        super.setContentView(view)
         view?.apply {
-            (business.getHolderDataBinding().root as ViewGroup).addView(this)
+            (business.getHolderDataBinding().root as ViewGroup).apply {
+                (business.getHolderDataBinding().root as ViewGroup).removeAllViews()
+            }.addView(this)
         }
 
     }
 
     protected fun setChildMainView(layoutResID: Int) {
         (business.getHolderDataBinding().root as ViewGroup).apply {
+            (business.getHolderDataBinding().root as ViewGroup).removeAllViews()
             addView(layoutResID.layoutInflater(this))
         }
     }
 
     protected fun setChildMainView(view: View?, params: ViewGroup.LayoutParams?) {
         view?.apply {
+            (business.getHolderDataBinding().root as ViewGroup).removeAllViews()
             (business.getHolderDataBinding().root as ViewGroup).addView(this,params)
         }
 

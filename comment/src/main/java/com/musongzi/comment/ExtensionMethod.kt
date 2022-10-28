@@ -141,7 +141,7 @@ object ExtensionMethod {
         return this;
     }
 
-    fun <V : ViewModel> Class<V>.instacne(
+    fun <V : ViewModel> Class<V>.instance(
         provider: ViewModelProvider?,
         ifEsayViewModelInjectRun: ((MszViewModel<*, *>) -> Unit)? = null
     ): V? {

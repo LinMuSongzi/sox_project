@@ -1,6 +1,7 @@
 package com.example.cpp.vm
 
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cpp.api.Api
 import com.example.cpp.business.MusicEffectsBusiness
@@ -11,27 +12,23 @@ import com.musongzi.core.base.vm.MszViewModel
 import com.musongzi.core.itf.IClient
 import com.musongzi.core.itf.INotifyDataSetChanged
 
-class MusicEffectsViewModel: ApiViewModel<INotifyDataSetChanged, MusicEffectsBusiness,Api>() {
-
-
-
-
-    fun loaderEffectsData(){
-        getApi().getEffects(null).sub{
-            getHolderClient()?.notifyDataSetChanged()
-        }
-    }
-
-
-
-
-
+class MusicEffectsViewModel : ApiViewModel<INotifyDataSetChanged, MusicEffectsBusiness, Api>() {
 
     companion object{
-
-        const val RECYCLE_UPDATE_KEY = "recycle"
-
+        const val CHOOSE_EFFECY_KEY = "e_key"
     }
 
+
+    fun loaderEffectsData() {
+        getApi().effects.sub { ef ->
+
+            (getHolderBusiness().realData() as? ArrayList)?.let {
+                Log.i(TAG, "loaderEffectsData: ${ef.data?.get(0)?.cName}")
+                it.clear()
+                it.addAll(ef.data!!)
+                getHolderClient()
+            }?.notifyDataSetChanged()
+        }
+    }
 
 }
