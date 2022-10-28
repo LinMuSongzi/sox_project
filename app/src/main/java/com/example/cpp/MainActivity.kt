@@ -7,23 +7,31 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import com.example.cpp.SoudSoxBusiness.Companion.pathConvetInputStream
+import com.example.cpp.array.ByteArrayEngine
+import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
 import com.example.cpp.data.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.vm.MusicEffectsViewModel
+import com.musongzi.comment.ExtensionMethod.convertFragment
 import com.musongzi.comment.ExtensionMethod.instance
+import com.musongzi.comment.ExtensionMethod.instanceByVm
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.activity.MszFragmentActivity
+import com.musongzi.comment.business.PermissionHelpBusiness.Companion.getNext
 import com.musongzi.core.itf.INotifyDataSetChanged
 import java.io.File
 
-class MainActivity : MszFragmentActivity(),INotifyDataSetChanged {
-
-
+class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 
 
     private lateinit var binding: ActivityMainBinding
-    var soxBusiness: SoudSoxBusiness? = null
+//    var soxBusiness: SoudSoxBusiness? = null
+
+    var fragment: Fragment? = null
+    val pathNeed =
+        Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +39,15 @@ class MainActivity : MszFragmentActivity(),INotifyDataSetChanged {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setChildMainView(binding.root)
 
+//        binding.idThisChooseTitle.setOnClickListener {
+//
+//
+//        }
+
 
         MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())?.apply {
             runOnUiThread {
-                MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(this){
+                MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(this) {
                     binding.chooseBinding.bean = it
                 }
                 getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
@@ -46,13 +59,35 @@ class MainActivity : MszFragmentActivity(),INotifyDataSetChanged {
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()
         binding.idPlayText.setOnClickListener {
-//            if (soxBusiness == null) {
-//                soxBusiness =  musicPath.openSoxBusinessByInputStream(this)
+
+            if (fragment == null) {
+                fragment = ByteArrayEngine::class.java.convertFragment(Bundle().apply {
+                    putString(PATH_KEY, pathNeed)
+                })
+                supportFragmentManager.beginTransaction().replace(
+                    R.id.id_byte_layout,
+                    fragment!!
+                ).commitNow()
+            } else {
+                val fragment = this.fragment!!
+                if (fragment.isHidden) {
+                    supportFragmentManager.beginTransaction().show(fragment).commitNow()
+                } else {
+                    supportFragmentManager.beginTransaction().hide(fragment).commitNow()
+                }
+            }
+
+
+//            SoudSoxBusiness::class.java.instanceByVm(
+//                MusicEffectsViewModel::class.java,
+//                business.topViewModelProvider()
+//            )?.observer {
+//                pathNeed.pathConvetInputStream()
 //            }
-//            soxBusiness?.observer()
-            SoxUtil.exoPlaySImple(this, null,
-            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
-        //SoxUtil.FILE_MP3.absolutePath)
+
+//            SoxUtil.exoPlaySImple(this, null,
+//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
+            //SoxUtil.FILE_MP3.absolutePath)
 //            SoxUtil.exeuteComment("soxi ${SoxUtil.BASE_URL}/千山万水.mp3")
         }
 
@@ -116,9 +151,12 @@ class MainActivity : MszFragmentActivity(),INotifyDataSetChanged {
 
     @SuppressLint("NotifyDataSetChanged")
     override fun notifyDataSetChanged() {
-        Log.i(TAG, "notifyDataSetChanged: 1231231231231231231  itemCount = ${binding.idRecyclerView.adapter?.itemCount}")
+        Log.i(
+            TAG,
+            "notifyDataSetChanged: 1231231231231231231  itemCount = ${binding.idRecyclerView.adapter?.itemCount}"
+        )
 //        runOnUiThread {
-            binding.idRecyclerView.adapter?.notifyDataSetChanged()
+        binding.idRecyclerView.adapter?.notifyDataSetChanged()
 //        }
     }
 

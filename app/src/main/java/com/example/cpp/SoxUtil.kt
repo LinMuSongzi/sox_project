@@ -109,8 +109,8 @@ object SoxUtil {
     }):Int
 
     @Nullable
-    fun buildMusicByEffectInfo(effectsBean: EffectsBean,byteArray: ByteArray):ByteArray{
-       return buildMusicByEffectInfo(effectsBean.r_name,effectsBean.charParams,byteArray)
+    fun buildMusicByEffectInfo(effectsBean: EffectsBean?,byteArray: ByteArray):ByteArray{
+       return buildMusicByEffectInfo(effectsBean?.r_name,effectsBean?.charParams,byteArray)
     }
 
     @JvmStatic

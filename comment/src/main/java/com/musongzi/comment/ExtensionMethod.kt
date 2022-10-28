@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.musongzi.comment.ExtensionMethod.getNextBusiness
 import com.musongzi.comment.business.DoubleLimiteBusiness
 import com.musongzi.comment.util.ApkUtil
 import com.musongzi.core.StringChooseBean
@@ -38,6 +39,8 @@ import com.musongzi.core.base.fragment.CollectionsViewFragment
 import com.musongzi.core.base.fragment.MszFragment
 import com.musongzi.core.base.manager.ActivityLifeManager
 import com.musongzi.core.base.vm.CollectionsViewModel
+import com.musongzi.core.base.vm.CoreViewModel
+import com.musongzi.core.base.vm.DataDriveViewModel
 import com.musongzi.core.base.vm.MszViewModel
 import com.musongzi.core.itf.*
 import com.musongzi.core.itf.page.IPageEngine
@@ -439,6 +442,14 @@ object ExtensionMethod {
     fun <N : IBusiness> Class<N>.getNextBusiness(next: INeed): N? {
         return next.getNext(this)
     }
+
+    fun <N : IBusiness,V: DataDriveViewModel<*>> Class<N>.instanceByVm(vm: Class<V>, provider: ViewModelProvider?): N? {
+        return vm.instance(provider)?.getHolderBusiness()?.getNext(this)
+    }
+
+//    fun <N : IBusiness> CoreViewModel<*>.getNextBusiness(next:Class<>): N? {
+//        return next.getNext(this)
+//    }
 
     @JvmStatic
     fun INeed.doubleLimiter(k: String, run: Runnable) {

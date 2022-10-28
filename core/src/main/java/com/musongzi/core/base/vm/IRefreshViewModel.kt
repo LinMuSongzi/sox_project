@@ -14,7 +14,7 @@ import com.musongzi.core.itf.page.ISource
 interface IRefreshViewModel<Item> : IHolderContext ,ILifeSaveStateHandle, IHolderNeed {
     fun getBundle(): Bundle?
     fun getHolderViewModelProvider():IHolderViewModelProvider?
-    fun refreshHolderClient(): IRefreshClient<Item>?
+    fun getRefreshClient(): IRefreshClient<Item>?
     fun getHolderSource():ISource<Item>?{
         return null
     }

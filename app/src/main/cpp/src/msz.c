@@ -264,17 +264,17 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
                                                     jbyteArray byte_array) {
 
     if (effect == NULL) {
-        return NULL;
+        printf("effect == null , charPare == null");
+        return byte_array;
     }
-    if (charPare == NULL) {
-        return NULL;
-    }
+//    if (*env != NULL) {
+//        return byte_array;
+//    }
 
     assert(sox_init() == SOX_SUCCESS);
 
 
-    jbyte *bytes;
-    bytes = (*env)->GetByteArrayElements(env, byte_array, 0);
+    jbyte *bytes =  (*env)->GetByteArrayElements(env, byte_array, 0);
     int chars_len = (*env)->GetArrayLength(env, byte_array);
 
     char *input_chars = mallocByte(chars_len);;
@@ -299,7 +299,7 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
     chain = sox_create_effects_chain(&in->encoding, &out->encoding);
 
 
-    e = sox_create_effect(sox_find_effect("bass"));
+    e = sox_create_effect(sox_find_effect((*env)->GetStringUTFChars(env,effect,0)));
     args[0] = "50";
     assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
     //增加效果到效果链
@@ -316,9 +316,10 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
     sox_close(in);
     sox_quit();
 
+
     jbyteArray jbyteArray = (*env)->NewByteArray(env, chars_len);//申明数组，与char字符长度一致
-    (*env)->SetByteArrayRegion(env, jbyteArray, 0, chars_len,
-                               (jbyte *) output_chars);//赋值到jbyteArray
+    (*env)->SetByteArrayRegion(env, jbyteArray, 0, chars_len,(jbyte *) output_chars);//赋值到jbyteArray
+    free(input_chars);
     return jbyteArray;
 
 }

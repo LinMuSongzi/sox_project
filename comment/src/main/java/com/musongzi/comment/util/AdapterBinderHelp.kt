@@ -1,5 +1,6 @@
 package com.musongzi.comment.util
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.Image
@@ -73,7 +74,7 @@ fun RequestBuilder<Drawable>.overrideInto(
 
 fun ImageView.showImage(uri: Any?, conifgOverride: (() -> Pair<Int, Int>)? = null) {
     uri?.let {
-        if(uri is Bitmap){
+        if (uri is Bitmap) {
             setImageBitmap(uri)
             return
         }
@@ -84,9 +85,9 @@ fun ImageView.showImage(uri: Any?, conifgOverride: (() -> Pair<Int, Int>)? = nul
 
 @BindingAdapter("setSelectColorByTextView")
 fun setSelectColorByTextView(textView: TextView, boolean: Boolean) {
-    if(boolean) {
+    if (boolean) {
         textView.setTextColor(com.musongzi.core.R.color.text_color_normal.androidColorGet())
-    }else{
+    } else {
         textView.setTextColor(com.musongzi.core.R.color.text_color_unSelect.androidColorGet())
     }
 }
@@ -110,6 +111,12 @@ fun setText(textView: TextView, str: CharSequence?) {
 @BindingAdapter("setTextNormal")
 fun setText(textView: TextView, res: Int) {
     textView.setText(res)
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("setTextByte")
+fun setTextByteShow(textView: TextView, res: Byte) {
+    textView.text = "0x"+Integer.toHexString(res.toInt())
 }
 
 @BindingAdapter("imageLoadRect")

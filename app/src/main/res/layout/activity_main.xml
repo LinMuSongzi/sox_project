@@ -36,6 +36,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/id_play_text">
 
                 <TextView
+                    android:id="@+id/id_this_choose_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15dp"
@@ -54,6 +55,11 @@
                 app:layout_constraintLeft_toRightOf="@+id/id_play_text"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/id_byte_layout"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"/>
 
         <TextView
             android:layout_width="wrap_content"

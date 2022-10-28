@@ -23,7 +23,7 @@ class MusicEffectsViewModel : ApiViewModel<INotifyDataSetChanged, MusicEffectsBu
         getApi().effects.sub { ef ->
 
             (getHolderBusiness().realData() as? ArrayList)?.let {
-                Log.i(TAG, "loaderEffectsData: ${ef.data?.get(0)?.cName}")
+//                Log.i(TAG, "loaderEffectsData: ${ef.data?.get(0)?.cName}")
                 it.clear()
                 it.addAll(ef.data!!)
                 getHolderClient()

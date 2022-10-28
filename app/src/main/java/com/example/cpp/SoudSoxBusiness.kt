@@ -12,40 +12,54 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.example.cpp.data.EffectsBean
+import com.example.cpp.vm.MusicEffectsViewModel
+import com.example.cpp.vm.MusicEffectsViewModel.Companion.CHOOSE_EFFECY_KEY
 import com.google.android.exoplayer2.util.MediaFormatUtil
+import com.musongzi.comment.ExtensionMethod.getSaveStateValue
+import com.musongzi.core.base.business.BaseWrapBusiness
+import com.musongzi.core.base.vm.MszViewModel
 import java.io.*
 import java.lang.reflect.Field
 import java.util.concurrent.BlockingQueue
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.experimental.or
 import kotlin.math.abs
 
-class SoudSoxBusiness private constructor(
-    val lifecycleOwner: LifecycleOwner,
-    var inputPath: String? = null
-) : DefaultLifecycleObserver {
+class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycleObserver {
 
-    constructor(lifecycleOwner: LifecycleOwner, inputStreamMethod: () -> InputStream) : this(
-        lifecycleOwner
-    ) {
-        this.inputStreamMethod = inputStreamMethod
-    }
+    //    lateinit var lifecycleOwner: LifecycleOwner
+    var inputPath: String? = null
+    lateinit var readyWrite: ByteArray
+//    constructor(lifecycleOwner: LifecycleOwner, inputStreamMethod: () -> InputStream) : this(
+//        lifecycleOwner
+//    ) {
+//        this.inputStreamMethod = inputStreamMethod
+//    }
 
     var audioTrack: AudioTrack? = null
-    lateinit var inputStreamMethod: () -> InputStream
+    var inputStreamMethod: (() -> InputStream?)? = null
 
-    //    var handlerThread: HandlerThread? = null
-//    lateinit var handler:Handler
+    private var init = false
+
     var blockingQueue: BlockingQueue<ByteArray> = LinkedBlockingQueue(1)
-    val executors = Executors.newFixedThreadPool(2)
+    val executors: ExecutorService = Executors.newFixedThreadPool(2)
     override fun onCreate(owner: LifecycleOwner) {
         initPre()
     }
 
-    fun observer() {
+    fun observer(inputStreamMethod: (() -> InputStream?)? = null) {
+        synchronized(SoudSoxBusiness::class.java) {
+            if (init) {
+                return
+            }
+            init = true
+        }
+        this.inputStreamMethod = inputStreamMethod
         if (audioTrack == null) {
-            lifecycleOwner.lifecycle.addObserver(this)
+            iAgent.getThisLifecycle()?.lifecycle?.addObserver(this)
         }
     }
 
@@ -73,12 +87,13 @@ class SoudSoxBusiness private constructor(
 
         override fun run() {
             val business = soudSoxBusiness
-            val lifecycle = soudSoxBusiness.lifecycleOwner.lifecycle
+            val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle()?.lifecycle ?: return
             handlerBusiness()
-            while (business.readLeng != -1 && lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+            while (business.readLeng != -1 && lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                 business.readLeng = inputStream.read(byteRead)
-                Log.i(TAG, "run: read")
-                business.blockingQueue.put(byteRead.copyOf())
+                val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
+//                Log.i(TAG, "run: r_name = ${ebean?.r_name}")
+                business.blockingQueue.put(SoxUtil.buildMusicByEffectInfo(ebean, byteRead.copyOf()))
             }
             business.destroyMeminfo()
         }
@@ -94,7 +109,7 @@ class SoudSoxBusiness private constructor(
                 )
                 FileInputStream(inputFile)
             } else {
-                soudSoxBusiness.inputStreamMethod.invoke()
+                soudSoxBusiness.inputStreamMethod?.invoke()!!
             }
             val byteHelps = ByteArray(20)
 
@@ -134,13 +149,14 @@ class SoudSoxBusiness private constructor(
                 byteHelps[1].toInt().shl(8).or(byteHelps[0].toInt())
             }
 
-            AUDIO_FORMAT = inputStream.read(byteHelps, 0, 2).let {
+            val bit = inputStream.read(byteHelps, 0, 2).let {
                 Log.i(TAG, "audio_Format bit byteHelps: ${byteHelps[0]} , ${byteHelps[1]}\n")
-                if (byteHelps[0].toInt() == 16) {
-                    ENCODING_PCM_16BIT
-                } else {
-                    ENCODING_PCM_8BIT
-                }
+                byteHelps[0]
+            }
+            AUDIO_FORMAT = if (bit.toInt() == 16) {
+                ENCODING_PCM_16BIT
+            } else {
+                ENCODING_PCM_8BIT
             }
 
             inputStream.read(sampleByteArray).apply {
@@ -170,15 +186,21 @@ class SoudSoxBusiness private constructor(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build(), Builder().setSampleRate(SAMPLE_RATE_INHZ).setEncoding(AUDIO_FORMAT).setChannelMask(CHANNEL_OUT_MONO).build(),
-                    minBufferSize, MODE_STREAM, AudioManager.AUDIO_SESSION_ID_GENERATE
+                        .build(),
+                    Builder().setSampleRate(SAMPLE_RATE_INHZ).setEncoding(AUDIO_FORMAT)
+                        .setChannelMask(CHANNEL_OUT_MONO).build(),
+                    minBufferSize,
+                    MODE_STREAM,
+                    AudioManager.AUDIO_SESSION_ID_GENERATE
                 )
                 soudSoxBusiness.audioTrack = audioTrack
                 soudSoxBusiness.audioTrack?.play()
                 soudSoxBusiness.executors.execute(MusicPlayRunnable(soudSoxBusiness))
             }
             // SampleRate * Channels * BitsPerSample / 8
-            byteRead = ByteArray(channels * abs(sampleByteArray[0] * 1000) * AUDIO_FORMAT / 8)
+            val size = abs(SAMPLE_RATE_INHZ) *  channels  * bit / 8
+            byteRead = ByteArray(size)
+            soudSoxBusiness.readyWrite = ByteArray(size)
             soudSoxBusiness.readLeng = top
         }
 
@@ -196,11 +218,11 @@ class SoudSoxBusiness private constructor(
     class MusicPlayRunnable(var soudSoxBusiness: SoudSoxBusiness) : java.lang.Runnable {
 
         override fun run() {
-
-            while (soudSoxBusiness.lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+            val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle() ?: return
+            while (lifecycle.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
                 val byteArray = soudSoxBusiness.blockingQueue.take()
 //                if (byteArray != null) {
-                Log.i(TAG, "run: write")
+//                Log.i(TAG, "run: write")
                 soudSoxBusiness.audioTrack?.write(byteArray, 0, soudSoxBusiness.readLeng)
 //                }
             }
@@ -221,13 +243,13 @@ class SoudSoxBusiness private constructor(
 
         const val TAG = "SoudSoxBusiness"
 
-        @JvmStatic
-        fun instance(lifecycleOwner: LifecycleOwner, inputPath: String) =
-            SoudSoxBusiness(lifecycleOwner, inputPath)
-
-        @JvmStatic
-        fun instance(lifecycleOwner: LifecycleOwner, input: () -> InputStream) =
-            SoudSoxBusiness(lifecycleOwner, input)
+//        @JvmStatic
+//        fun instance(lifecycleOwner: LifecycleOwner, inputPath: String) =
+//            SoudSoxBusiness(lifecycleOwner, inputPath)
+//
+//        @JvmStatic
+//        fun instance(lifecycleOwner: LifecycleOwner, input: () -> InputStream) =
+//            SoudSoxBusiness(lifecycleOwner, input)
 
 
         fun String.pathConvetInputStream() = FileInputStream(File(this))
@@ -238,10 +260,10 @@ class SoudSoxBusiness private constructor(
 
         fun Int.convertInputStreamBySize() = ByteArrayOutputStream(this);
 
-        fun String.openSoxBusinessByInputStream(lifecycleOwner: LifecycleOwner) =
-            instance(lifecycleOwner) {
-                pathConvetInputStream()
-            }
+//        fun String.openSoxBusinessByInputStream(lifecycleOwner: LifecycleOwner) =
+//            instance(lifecycleOwner) {
+//                pathConvetInputStream()
+//            }
     }
 
 
