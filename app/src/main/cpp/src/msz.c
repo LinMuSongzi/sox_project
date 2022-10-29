@@ -287,8 +287,8 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
     (*env)->ReleaseByteArrayElements(env, byte_array, bytes, 0);
 
     static sox_format_t *out, *in;
-//
-    assert(in = sox_open_mem_read(input_chars, chars_len, NULL, NULL, NULL));
+
+    assert(in = sox_open_mem_read(input_chars, chars_len, NULL, NULL, "wav"));
 
     assert(out = sox_open_mem_write(output_chars, chars_len, &in->signal, NULL, NULL, NULL));
 

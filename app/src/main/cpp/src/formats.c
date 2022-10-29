@@ -492,6 +492,11 @@ static sox_format_t * open_read(
     char               const * filetype)
 {
   sox_format_t * ft = lsx_calloc(1, sizeof(*ft));
+
+  if(!path){
+      ft->io_type = lsx_io_pipe;
+  }
+
   sox_format_handler_t const * handler;
   char const * const io_types[] = {"file", "pipe", "file URL"};
   char const * type = "";

@@ -55,7 +55,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
             }
         }
 
-        showFragmentByte()
+//        showFragmentByte()
 
         // Example of a call to a native method
         binding.idPlayText.text =
@@ -143,8 +143,8 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         // Used to load the 'cpp' library on application startup.
         private const val TAG = SoxUtil.TAG
         val musicPath =
-            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
-//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
+//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
+            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
 
         init {
             System.loadLibrary("msz_sox")
