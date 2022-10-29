@@ -13,11 +13,15 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.example.cpp.SoudSoxBusiness.Companion.TAG
+import com.example.cpp.business.IMusicAnalysis
+import com.example.cpp.business.WavAnalysisBusiness
 import com.example.cpp.data.EffectsBean
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.example.cpp.vm.MusicEffectsViewModel.Companion.CHOOSE_EFFECY_KEY
 import com.google.android.exoplayer2.util.MediaFormatUtil
+import com.musongzi.comment.ExtensionMethod.getNextBusiness
 import com.musongzi.comment.ExtensionMethod.getSaveStateValue
+import com.musongzi.core.base.business.BaseMapBusiness
 import com.musongzi.core.base.business.BaseWrapBusiness
 import com.musongzi.core.base.vm.MszViewModel
 import java.io.*
@@ -30,7 +34,7 @@ import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.math.abs
 
-class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycleObserver {
+class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleObserver {
 
     //    lateinit var lifecycleOwner: LifecycleOwner
     var inputPath: String? = null
@@ -105,7 +109,7 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
         override fun run() {
             val business = soudSoxBusiness
             val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle()?.lifecycle ?: return
-            handlerBusiness()
+            preAnalysisMusicInfo()
             while (business.readLeng != -1 && lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                 business.readLeng = inputStream.read(byteRead)
                 val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
@@ -115,86 +119,19 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
             business.destroyMeminfo()
         }
 
-        private fun handlerBusiness() {
-            var lenght: Long? = null
-//            val lifecycle = soudSoxBusiness.lifecycleOwner.lifecycle
-            inputStream = if (soudSoxBusiness.inputPath != null) {
-                val inputFile = File(soudSoxBusiness.inputPath)
+        private fun preAnalysisMusicInfo() {
+            val lenght: Long?
+            val business = soudSoxBusiness
+            inputStream = if (business.inputPath != null) {
+                val inputFile = File(business.inputPath!!)
                 lenght = inputFile.length()
-                Log.i(TAG, "audio_Format: 文件中长度 ${lenght} 字节 , 约 ${inputFile.length() / 1024} kb")
+                Log.i(TAG, "audio_Format: 文件中长度 $lenght 字节 , 约 ${inputFile.length() / 1024} kb")
                 FileInputStream(inputFile)
             } else {
-                soudSoxBusiness.inputStreamMethod?.invoke()!!
-            }
-            val byteHelps = ByteArray(20)
-
-            var top = inputStream.read(byteHelps, 0, 20)
-
-            val audio_Format = inputStream.read(byteHelps, 0, 2).let {
-
-                Log.i(
-                    TAG,
-                    "audio_Format audio_Format byteHelps: ${byteHelps[0]} , ${byteHelps[1]}\n"
-                )
-                byteHelps[0]
-            }//1代表PCM无损格式
-
-            val channels = inputStream.read(byteHelps, 0, 2).let {
-
-                Log.i(TAG, "audio_Format channels byteHelps: ${byteHelps[0]} , ${byteHelps[1]}\n")
-                byteHelps[0]
-            }//1或2
-            val sampleByteArray = ByteArray(4);
-
-            val simpleRate = inputStream.read(sampleByteArray).let {
-//                val _ff = 1.or(8) - 1
-                val sr = convetInt(sampleByteArray,true)
-                Log.i(
-                    TAG,
-                    "audio_Format simpleRate byteHelps: 第一位 = ${sampleByteArray[0]} ,第二位 ${sampleByteArray[1].toInt()} , ${sampleByteArray[2]} , ${sampleByteArray[3]}\n"
-                )
-                Log.i(TAG, "audio_Format simpleRate byteHelps:ret =  $sr\n")
-                sr
-            }//采样率(Sample, Rate)
-
-            inputStream.read(byteHelps, 0, 4)
-
-            val minSize = inputStream.read(byteHelps, 0, 2).let {
-                Log.i(TAG, "audio_Format minSize byteHelps: ${byteHelps[0]} , ${byteHelps[1]}\n")
-                byteHelps[1].toInt().shl(8).or(byteHelps[0].toInt())
+                business.inputStreamMethod?.invoke()!!
             }
 
-            val bit = inputStream.read(byteHelps, 0, 2).let {
-                Log.i(TAG, "audio_Format bit byteHelps: ${byteHelps[0]} , ${byteHelps[1]}\n")
-                byteHelps[0]
-            }
-            AUDIO_FORMAT = if (bit.toInt() == 16) {
-                ENCODING_PCM_16BIT
-            } else {
-                ENCODING_PCM_8BIT
-            }
-
-            inputStream.read(sampleByteArray).apply {
-                //"data"子块 (0x64617461),4字节
-                Log.i(
-                    TAG,
-                    "audio_Format data子块 byteHelps: ${sampleByteArray[0]} , ${sampleByteArray[1]} , ${sampleByteArray[2]} , ${sampleByteArray[3]} \n"
-                )
-            }
-
-            //子块数据域大小（SubChunk Size）
-            top = inputStream.read(sampleByteArray).apply {
-                //4字节,子块数据域大小（SubChunk Size）
-                Log.i(
-                    TAG,
-                    "audio_Format 4字节,子块数据域大小 byteHelps: ${sampleByteArray[0]} , ${sampleByteArray[1]} , ${sampleByteArray[2]} , ${sampleByteArray[3]} \n"
-                )
-            }
-
-            Log.i(
-                TAG, "run:\n audio_Format = $audio_Format \n channels = $channels \n " +
-                        "simpleRate = $simpleRate \n minSize = $minSize \n bit = $AUDIO_FORMAT\n"
-            )
+            val musicInfo = WavAnalysisBusiness::class.java.getNextBusiness(business)?.getMusicInfoByMusic(inputStream) ?: return
 
             Handler(Looper.getMainLooper()).post {
                 val audioTrack = AudioTrack(
@@ -208,18 +145,12 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
                     MODE_STREAM,
                     AudioManager.AUDIO_SESSION_ID_GENERATE
                 )
-                soudSoxBusiness.audioTrack = audioTrack
-                soudSoxBusiness.audioTrack?.play()
-                soudSoxBusiness.executors.execute(MusicPlayRunnable(soudSoxBusiness))
+                business.audioTrack = audioTrack
+                business.audioTrack?.play()
+                business.executors.execute(MusicPlayRunnable(business))
             }
             // SampleRate * Channels * BitsPerSample / 8
-            val size = simpleRate * channels * bit / 8
-
-            lenght?.apply {
-                val time = (this - 44) / size
-                Log.i(TAG, "audio_Format time: $time , simpleRate = $simpleRate")
-            }
-
+            val size = musicInfo.simpleRate * musicInfo.channel * musicInfo.bit / 8
             /**
              *
              *
@@ -227,8 +158,8 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
              */
 
             byteRead = ByteArray(size)
-            soudSoxBusiness.readyWrite = ByteArray(size)
-            soudSoxBusiness.readLeng = top
+            business.readyWrite = ByteArray(size)
+            business.readLeng = musicInfo.headBitSize
         }
 
 
@@ -295,35 +226,4 @@ class SoudSoxBusiness : BaseWrapBusiness<MszViewModel<*, *>>(), DefaultLifecycle
     }
 
 
-}
-
-
-private fun convetInt(sampleByteArray: ByteArray, leOrRight: Boolean): Int {
-    val _1 = sumIntByByte(byte = sampleByteArray[0])
-    val _2 = sumIntByByte(byte = sampleByteArray[1])
-    val _3 = sumIntByByte(byte = sampleByteArray[2])
-    val _4 = sumIntByByte(byte = sampleByteArray[3])
-    Log.i(TAG, "audio_Format convetInt: $_1 , $_2 , $_3 , $_4")
-    return if (leOrRight) {
-        _4.shl(24).or(_3.shl(16)).or(_2.shl(8)).or(_1)
-    } else {
-        _1.shl(24).or(_2.shl(16)).or(_3.shl(8)).or(_4)
-    }
-
-
-}
-
-fun sumIntByByte(byte: Byte): Int {
-    return if (byte >= 0) {
-        byte.toInt()
-    } else {
-        ((-byte)).or(128)
-    }
-
-
-    /**
-     *
-     * 10100 0000
-     *
-     */
 }
