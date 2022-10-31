@@ -24,14 +24,14 @@ public class WavAnalysisBusiness extends BaseWrapBusiness<IViewInstance> impleme
     }
 
     @Override
-    public MusicInfo getMusicInfoByMusic(@NonNull InputStream input) {
+    public MusicInfo getMusicInfoByMusic(@NonNull InputStream input, byte[] bytes) {
 
-        byte[] bytesOne = new byte[0x24];
+        byte[] bytesOne = bytes != null ? bytes : new byte[0x24];
         MusicInfo musicInfo = null;
         try {
             input.read(bytesOne);
             musicInfo = new MusicInfo();
-            musicInfo.setChannel(reductionByteToInt4(bytesOne[0x16], bytesOne[0x17],bytesOne[0x18],bytesOne[0x19]));
+            musicInfo.setChannel(reductionByteToInt4(bytesOne[0x16], bytesOne[0x17], bytesOne[0x18], bytesOne[0x19]));
             musicInfo.setBit((reductionByteToInt4(bytesOne[0x22], bytesOne[0x23])));
             musicInfo.setSimpleRate(reductionByteToInt4(bytesOne[0x18], bytesOne[0x19], bytesOne[0x1a], bytesOne[0x1b]));
             if (bytesOne[0x12] == 0x12) {
@@ -51,7 +51,7 @@ public class WavAnalysisBusiness extends BaseWrapBusiness<IViewInstance> impleme
     public MusicInfo getMusicInfoByMusic(@NonNull File file) {
         MusicInfo musicInfo = IMusicAnalysis.super.getMusicInfoByMusic(file);
         if (musicInfo != null) {
-            long time = (file.length() - musicInfo.getHeadBitSize()) / (musicInfo.getSimpleRate() * musicInfo.getBit() * musicInfo.getChannel() / 8 );
+            long time = (file.length() - musicInfo.getHeadBitSize()) / (musicInfo.getSimpleRate() * musicInfo.getBit() * musicInfo.getChannel() / 8);
             musicInfo.setTimeSecond(time);
         }
         return null;
@@ -61,6 +61,15 @@ public class WavAnalysisBusiness extends BaseWrapBusiness<IViewInstance> impleme
     public MusicInfo getMusicInfoByMusic(@NonNull String path) {
         return IMusicAnalysis.super.getMusicInfoByMusic(path);
     }
+
+    /**
+     * 93(01011 0101)   -64(1100 0000)
+     * <p>
+     * 01011 0101 1100 0000 = 24000
+     *
+     * @param bytes
+     * @return
+     */
 
 
     public static int reductionByteToInt4(byte... bytes) {

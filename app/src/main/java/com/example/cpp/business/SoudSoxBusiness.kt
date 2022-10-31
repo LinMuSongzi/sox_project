@@ -1,4 +1,4 @@
-package com.example.cpp
+package com.example.cpp.business
 
 import android.media.*
 import android.media.AudioFormat.*
@@ -9,7 +9,7 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import com.example.cpp.business.WavAnalysisBusiness
+import com.example.cpp.SoxUtil
 import com.example.cpp.data.EffectsBean
 import com.example.cpp.vm.MusicEffectsViewModel.Companion.CHOOSE_EFFECY_KEY
 import com.musongzi.comment.ExtensionMethod.getNextBusiness
@@ -22,19 +22,15 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 
-class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleObserver {
+class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleObserver,
+    ISoudPlayBusiness {
 
-    //    lateinit var lifecycleOwner: LifecycleOwner
     var inputPath: String? = null
-    lateinit var readyWrite: ByteArray
-//    constructor(lifecycleOwner: LifecycleOwner, inputStreamMethod: () -> InputStream) : this(
-//        lifecycleOwner
-//    ) {
-//        this.inputStreamMethod = inputStreamMethod
-//    }
 
+    //    lateinit var readyWrite: ByteArray
     var audioTrack: AudioTrack? = null
     var inputStreamMethod: (() -> InputStream?)? = null
+    var headBytes = ByteArray(44)
 
     private var init = false
 
@@ -44,7 +40,7 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
         initPre()
     }
 
-    fun observer(inputStreamMethod: (() -> InputStream?)? = null) {
+    override fun observer(inputStreamMethod: (() -> InputStream?)?) {
         synchronized(SoudSoxBusiness::class.java) {
             if (init) {
                 return
@@ -57,7 +53,7 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
         }
     }
 
-    fun observer(p: String) {
+    override fun observer(p: String) {
         synchronized(SoudSoxBusiness::class.java) {
             if (init) {
                 return
@@ -98,18 +94,30 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             simpleRead222()
         }
 
-
+        /**
+         * 解析wav音频，预处理
+         */
         private fun simpleRead222() {
             val business = soudSoxBusiness
             val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle()?.lifecycle ?: return
             preAnalysisMusicInfo()
-            business.readSize = inputStream.read(byteRead)
-            inputStream.close()
+//            business.readSize = inputStream.read(byteRead, 24, byteRead.size)
+            business.readSize = inputStream.read(byteRead,)
 //            inputStream = null;
-//            while (true) {
-                val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
-                business.blockingQueue.put(SoxUtil.buildMusicByEffectInfo(ebean, byteRead.copyOf()))
-//            }
+            while (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+//            inputStream.read(byteRead)
+                if (business.readSize != -1) {
+                    val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
+//                    System.arraycopy(business.headBytes, 0, byteRead, 0, 24)
+                    business.blockingQueue.put(SoxUtil.buildMusicByEffectInfo(ebean, byteRead.copyOf()))
+//                    business.readSize = inputStream.read(byteRead, 24, byteRead.size)
+                    business.readSize = inputStream.read(byteRead,)
+                }else{
+                    break
+                }
+            }
+            inputStream.close()
+            business.destroyMeminfo()
         }
 
         private fun simpleRead1() {
@@ -135,10 +143,11 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             } else {
                 business.inputStreamMethod?.invoke()!!
             }
-
+//            business.headBytes = ByteArray(44)
             val musicInfo = WavAnalysisBusiness::class.java.getNextBusiness(business)
-                ?.getMusicInfoByMusic(inputStream) ?: return
-
+                ?.getMusicInfoByMusic(inputStream, business.headBytes) ?: return
+            Log.i(TAG, "preAnalysisMusicInfo: $musicInfo")
+            inputStream.read(business.headBytes, 24, 20)
             business.iAgent.runOnUiThread {
                 val audioTrack = AudioTrack(
                     AudioAttributes.Builder()
@@ -157,8 +166,8 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             }
             // SampleRate * Channels * BitsPerSample / 8
             val size = musicInfo.simpleRate * musicInfo.channel * musicInfo.bit / 8
-            byteRead = ByteArray(size)
-            business.readyWrite = ByteArray(size)
+            byteRead = ByteArray(44 + size)
+//            business.readyWrite = ByteArray(size)
             business.readSize = musicInfo.headBitSize
         }
 
@@ -174,6 +183,9 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
 
     var readSize = 0;
 
+    /**
+     * 写入数据，播放音乐
+     */
     class MusicPlayRunnable(var soudSoxBusiness: SoudSoxBusiness) : java.lang.Runnable {
 
         override fun run() {
@@ -200,10 +212,13 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
 
         @JvmStatic
         fun String.pathConvetInputStream() = FileInputStream(File(this))
+
         @JvmStatic
         fun String.pathConvetOutPutStream() = FileOutputStream(File(this))
+
         @JvmStatic
         fun Int.convertOutputStreamBySize() = ByteArrayOutputStream(this);
+
         @JvmStatic
         fun Int.convertInputStreamBySize() = ByteArrayOutputStream(this);
     }
