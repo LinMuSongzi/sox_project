@@ -2,16 +2,15 @@ package com.example.cpp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import com.example.cpp.SoudSoxBusiness.Companion.pathConvetInputStream
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
+import com.example.cpp.business.SoudSoxBusiness
 import com.example.cpp.data.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.vm.MusicEffectsViewModel
@@ -20,10 +19,8 @@ import com.musongzi.comment.ExtensionMethod.instance
 import com.musongzi.comment.ExtensionMethod.instanceByVm
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.activity.MszFragmentActivity
-import com.musongzi.comment.business.PermissionHelpBusiness.Companion.getNext
 import com.musongzi.core.itf.INotifyDataSetChanged
 import java.io.File
-import java.io.RandomAccessFile
 
 class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 
@@ -61,9 +58,6 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()
         binding.idPlayText.setOnClickListener {
-
-
-
 
             SoudSoxBusiness::class.java.instanceByVm(
                 MusicEffectsViewModel::class.java,
@@ -143,8 +137,8 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         // Used to load the 'cpp' library on application startup.
         private const val TAG = SoxUtil.TAG
         val musicPath =
-//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
-            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
+            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
+//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
 
         init {
             System.loadLibrary("msz_sox")

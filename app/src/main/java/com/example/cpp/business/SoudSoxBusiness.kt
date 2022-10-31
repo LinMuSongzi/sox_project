@@ -81,6 +81,10 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
         java.lang.Runnable {
 
         lateinit var inputStream: InputStream
+
+        /**
+         * 44 + simplerate * bit * channels / 8
+         */
         lateinit var byteRead: ByteArray
 
         init {
@@ -101,18 +105,16 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             val business = soudSoxBusiness
             val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle()?.lifecycle ?: return
             preAnalysisMusicInfo()
-//            business.readSize = inputStream.read(byteRead, 24, byteRead.size)
-            business.readSize = inputStream.read(byteRead,)
-//            inputStream = null;
+            business.readSize = inputStream.read(byteRead, 44, byteRead.size - 44)
+//            business.readSize = inputStream.read(byteRead)
             while (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
 //            inputStream.read(byteRead)
                 if (business.readSize != -1) {
                     val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
-//                    System.arraycopy(business.headBytes, 0, byteRead, 0, 24)
                     business.blockingQueue.put(SoxUtil.buildMusicByEffectInfo(ebean, byteRead.copyOf()))
-//                    business.readSize = inputStream.read(byteRead, 24, byteRead.size)
-                    business.readSize = inputStream.read(byteRead,)
-                }else{
+                    business.readSize = inputStream.read(byteRead, 44, byteRead.size - 44)
+                }
+                else{
                     break
                 }
             }
@@ -167,7 +169,8 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             // SampleRate * Channels * BitsPerSample / 8
             val size = musicInfo.simpleRate * musicInfo.channel * musicInfo.bit / 8
             byteRead = ByteArray(44 + size)
-//            business.readyWrite = ByteArray(size)
+            WavAnalysisBusiness.writeWaveFileHeader(business.headBytes,size.toLong(),size.toLong()+36,musicInfo.simpleRate.toLong(),musicInfo.channel,size.toLong())
+            System.arraycopy(business.headBytes, 0, byteRead, 0, 44)
             business.readSize = musicInfo.headBitSize
         }
 
@@ -192,7 +195,7 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle() ?: return
             while (lifecycle.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
                 val byteArray = soudSoxBusiness.blockingQueue.take()
-                soudSoxBusiness.audioTrack?.write(byteArray, 0, soudSoxBusiness.readSize)
+                soudSoxBusiness.audioTrack?.write(byteArray, 44, soudSoxBusiness.readSize-44)
             }
         }
     }

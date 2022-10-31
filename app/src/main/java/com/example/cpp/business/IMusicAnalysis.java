@@ -15,7 +15,7 @@ public interface IMusicAnalysis {
     @Nullable
     default MusicInfo getMusicInfoByMusic(File file) {
         try {
-            return getMusicInfoByMusic(new FileInputStream(file));
+            return getMusicInfoByMusic(new FileInputStream(file),null);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -31,7 +31,7 @@ public interface IMusicAnalysis {
     MusicInfo getMusicInfoByMusic(Channels channel);
 
     @Nullable
-    MusicInfo getMusicInfoByMusic(InputStream inputStream);
+    MusicInfo getMusicInfoByMusic(InputStream inputStream,@Nullable byte[] bytes);
 
 
 }

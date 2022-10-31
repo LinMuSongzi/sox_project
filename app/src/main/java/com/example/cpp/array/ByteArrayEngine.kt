@@ -1,16 +1,14 @@
 package com.example.cpp.array
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cpp.SoudSoxBusiness.Companion.pathConvetInputStream
+import com.example.cpp.business.SoudSoxBusiness.Companion.pathConvetInputStream
 import com.example.cpp.data.ByteInfo
 import com.example.cpp.databinding.AdapterByteShowBinding
-import com.musongzi.comment.util.setTextByteShow
 import com.musongzi.core.ExtensionCoreMethod.adapter
 import com.musongzi.core.annotation.CollecttionsEngine
 import com.musongzi.core.base.business.collection.BaseMoreViewEngine
@@ -20,7 +18,6 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
 import io.reactivex.rxjava3.core.ObservableOnSubscribe
 import java.io.InputStream
-import java.io.RandomAccessFile
 
 @CollecttionsEngine(isEnableReFresh = true, isEnableLoadMore = true, isEnableEventBus = true)
 class ByteArrayEngine : BaseMoreViewEngine<Byte, List<Byte>>(),
@@ -62,23 +59,10 @@ class ByteArrayEngine : BaseMoreViewEngine<Byte, List<Byte>>(),
         } else {
             d.idText.text = Html.fromHtml("<font color=#ff0000>$i</font><br/><font color=#cccccc>$p</font>")
         }
-//        d.root.setOnClickListener {
-//            if (chooseBean == i) {
-//                return@setOnClickListener
-//            }
-//            chooseBean?.apply {
-//                getRefreshViewModel().getRefreshClient()?.notifyDataSetChangedItem(index)
-//                choose(false)
-//            }
-//            i.choose(true)
-//            if (i.index == -1) {
-//                i.index = p
-//            }
-//            chooseBean = i
-//            getRefreshViewModel().getRefreshClient()?.notifyDataSetChangedItem(i.index)
-//        }
 
     }
+
+    override fun thisStartPage() = 1
 
     override fun pageSize(): Int {
         return 160
