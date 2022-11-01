@@ -493,7 +493,7 @@ static sox_format_t * open_read(
 {
   sox_format_t * ft = lsx_calloc(1, sizeof(*ft));
 
-  if(!path){
+  if(buffer!=NULL){
       ft->io_type = lsx_io_pipe;
   }
 

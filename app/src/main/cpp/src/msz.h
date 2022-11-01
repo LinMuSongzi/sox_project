@@ -9,7 +9,7 @@
 #include <jni.h>
 #include <malloc.h>
 #include <assert.h>
-
+#include <android/log.h>
 
 
 #endif //CPP_MSZ_H

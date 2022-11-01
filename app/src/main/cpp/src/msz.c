@@ -4,7 +4,7 @@
 
 #include <string.h>
 #include "msz.h"
-
+//#include
 
 void handlerPathToArray(jstring inputPath, jstring outputPath);
 
@@ -203,94 +203,43 @@ JNIEXPORT char *mallocByte(int len) {
     return (char *) malloc(len * sizeof(char));
 }
 
-jbyteArray JNICALL
-Java_com_example_cpp_SoxUtil_handlerSteam(JNIEnv *env, jclass clazz, jbyteArray bytearray) {
-
-    assert(sox_init() == SOX_SUCCESS);
-
-
-    jbyte *bytes;
-    bytes = (*env)->GetByteArrayElements(env, bytearray, 0);
-    int chars_len = (*env)->GetArrayLength(env, bytearray);
-
-    char *input_chars = mallocByte(chars_len);;
-    char *output_chars = mallocByte(chars_len);
-
-    memset(input_chars, 0, chars_len + 1);
-    memcpy(input_chars, bytes, chars_len);
-    input_chars[chars_len] = 0;
-
-    (*env)->ReleaseByteArrayElements(env, bytearray, bytes, 0);
-
-    static sox_format_t *out, *in;
-//
-    assert(in = sox_open_mem_read(input_chars, chars_len, NULL, NULL, NULL));
-
-    assert(out = sox_open_mem_write(output_chars, chars_len, &in->signal, NULL, NULL, NULL));
-
-    sox_effects_chain_t *chain;
-    sox_effect_t *e;
-    char *args[10];
-
-    chain = sox_create_effects_chain(&in->encoding, &out->encoding);
-
-
-    e = sox_create_effect(sox_find_effect("bass"));
-    args[0] = "50";
-    assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
-    //增加效果到效果链
-    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
-    free(e);
-
-    //让整个效果器运行起来，直到遇到eof
-    sox_flow_effects(chain, NULL, NULL);
-
-    //clean
-    sox_delete_effects_chain(chain);
-
-    sox_close(out);
-    sox_close(in);
-    sox_quit();
-
-    jbyteArray jbyteArray = (*env)->NewByteArray(env, chars_len);//申明数组，与char字符长度一致
-    (*env)->SetByteArrayRegion(env, jbyteArray, 0, chars_len,
-                               (jbyte *) output_chars);//赋值到jbyteArray
-    return jbyteArray;
-}
+const char * TAG = "SOX";
 
 JNIEXPORT jbyteArray JNICALL
 Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, jstring effect,
                                                     jcharArray charPare,
                                                     jbyteArray byte_array) {
-
+    int init_size2 = (*env)->GetArrayLength(env, byte_array);
     if (effect == NULL) {
-        printf("effect == null , charPare == null");
-        return byte_array;
+//        LOG("effect == null , charPare == null");
+        char *output_chars = mallocByte(init_size2);
+
+        (*env)->GetByteArrayRegion(env, byte_array, 0, init_size2, output_chars);
+        jbyteArray jbyteArray = (*env)->NewByteArray(env, init_size2);//申明数组，与char字符长度一致
+
+        (*env)->SetByteArrayRegion(env, jbyteArray, 0, init_size2, (const jbyte *) output_chars);//赋值到jbyteArray
+        __android_log_print(ANDROID_LOG_INFO, "SOX", "%s", "转换~~~~~~");
+        return jbyteArray;
     }
 //    if (*env != NULL) {
 //        return byte_array;
 //    }
 
     assert(sox_init() == SOX_SUCCESS);
+//    jsize size = (*env)->GetArrayLength(env,byte_array);
+    int init_size = (*env)->GetArrayLength(env, byte_array);
 
+    size_t size = init_size;
 
-    jbyte *bytes =  (*env)->GetByteArrayElements(env, byte_array, 0);
-    int chars_len = (*env)->GetArrayLength(env, byte_array);
-
-    char *input_chars = mallocByte(chars_len);;
-    char *output_chars = mallocByte(chars_len);
-
-    memset(input_chars, 0, chars_len + 1);
-    memcpy(input_chars, bytes, chars_len);
-    input_chars[chars_len] = 0;
-
-    (*env)->ReleaseByteArrayElements(env, byte_array, bytes, 0);
+    char *bytearr = mallocByte(init_size);
+    char *output_chars = mallocByte(init_size);
+    (*env)->GetByteArrayRegion(env, byte_array, 0, init_size, bytearr);
 
     static sox_format_t *out, *in;
 
-    assert(in = sox_open_mem_read(input_chars, chars_len, NULL, NULL, "wav"));
+    assert(in = sox_open_mem_read(bytearr, init_size, NULL, NULL, "wav"));
 
-    assert(out = sox_open_mem_write(output_chars, chars_len, &in->signal, NULL, NULL, NULL));
+    assert(out = sox_open_mem_write(output_chars, size, &in->signal, NULL, "wav", NULL));
 
     sox_effects_chain_t *chain;
     sox_effect_t *e;
@@ -298,13 +247,27 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
 
     chain = sox_create_effects_chain(&in->encoding, &out->encoding);
 
+//    char * eff = (*env)->GetStringUTFChars(env,effect,0);
 
-    e = sox_create_effect(sox_find_effect((*env)->GetStringUTFChars(env,effect,0)));
-    args[0] = "50";
+    //创建一个最简单的效果，输入文件
+//    e = sox_create_effect(sox_find_effect("input"));
+//    args[0] = (char *) in, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+//    //增加效果到效果链
+//    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+//    free(e);
+
+    e = sox_create_effect(sox_find_effect("bass"));
+    args[0] = "25";
     assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
     //增加效果到效果链
     assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
     free(e);
+
+//    //输出到文件的效果器
+//    e = sox_create_effect(sox_find_effect("output"));
+//    args[0] = (char *) out, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+//    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+//    free(e);
 
     //让整个效果器运行起来，直到遇到eof
     sox_flow_effects(chain, NULL, NULL);
@@ -316,10 +279,15 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
     sox_close(in);
     sox_quit();
 
+//    free(eff);
 
-    jbyteArray jbyteArray = (*env)->NewByteArray(env, chars_len);//申明数组，与char字符长度一致
-    (*env)->SetByteArrayRegion(env, jbyteArray, 0, chars_len,(jbyte *) output_chars);//赋值到jbyteArray
-    free(input_chars);
+//    (*env)->ReleaseByteArrayElements(env,byte_array, 0);
+
+    jbyteArray jbyteArray = (*env)->NewByteArray(env, init_size2);//申明数组，与char字符长度一致
+
+    const jbyte *b = (const jbyte *) output_chars;
+    (*env)->SetByteArrayRegion(env, jbyteArray, 0, init_size2, b);//赋值到jbyteArray
+    __android_log_print(ANDROID_LOG_INFO, "SOX", "%s", "输出~~~~~~");
     return jbyteArray;
 
 }

@@ -30,7 +30,9 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
     //    lateinit var readyWrite: ByteArray
     var audioTrack: AudioTrack? = null
     var inputStreamMethod: (() -> InputStream?)? = null
-    var headBytes = ByteArray(44)
+    val offset = 44;
+    var headBytes = ByteArray(offset)
+
 
     private var init = false
 
@@ -105,16 +107,20 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             val business = soudSoxBusiness
             val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle()?.lifecycle ?: return
             preAnalysisMusicInfo()
-            business.readSize = inputStream.read(byteRead, 44, byteRead.size - 44)
+            business.readSize = inputStream.read(byteRead, business.offset, byteRead.size - business.offset)
 //            business.readSize = inputStream.read(byteRead)
             while (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
 //            inputStream.read(byteRead)
                 if (business.readSize != -1) {
                     val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
-                    business.blockingQueue.put(SoxUtil.buildMusicByEffectInfo(ebean, byteRead.copyOf()))
-                    business.readSize = inputStream.read(byteRead, 44, byteRead.size - 44)
-                }
-                else{
+                    business.blockingQueue.put(
+                        SoxUtil.buildMusicByEffectInfo(
+                            ebean,
+                            byteRead.copyOf()
+                        )
+                    )
+                    business.readSize = inputStream.read(byteRead, business.offset, byteRead.size - business.offset)
+                } else {
                     break
                 }
             }
@@ -149,7 +155,7 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             val musicInfo = WavAnalysisBusiness::class.java.getNextBusiness(business)
                 ?.getMusicInfoByMusic(inputStream, business.headBytes) ?: return
             Log.i(TAG, "preAnalysisMusicInfo: $musicInfo")
-            inputStream.read(business.headBytes, 24, 20)
+//            inputStream.read(business.headBytes, 24, 20)
             business.iAgent.runOnUiThread {
                 val audioTrack = AudioTrack(
                     AudioAttributes.Builder()
@@ -168,13 +174,35 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             }
             // SampleRate * Channels * BitsPerSample / 8
             val size = musicInfo.simpleRate * musicInfo.channel * musicInfo.bit / 8
-            byteRead = ByteArray(44 + size)
-            WavAnalysisBusiness.writeWaveFileHeader(business.headBytes,size.toLong(),size.toLong()+36,musicInfo.simpleRate.toLong(),musicInfo.channel,size.toLong())
-            System.arraycopy(business.headBytes, 0, byteRead, 0, 44)
+            byteRead = ByteArray(musicInfo.headBitSize + size)
+            WavAnalysisBusiness.writeWaveFileHeader(
+                business.headBytes,
+                size.toLong(),
+                size.toLong() + business.offset - 8,
+                musicInfo.simpleRate.toLong(),
+                musicInfo.channel,
+                size.toLong()
+            )
+            System.arraycopy(business.headBytes, 0, byteRead, 0, business.offset)
             business.readSize = musicInfo.headBitSize
         }
 
 
+    }
+
+    /**
+     * 写入数据，播放音乐
+     */
+    class MusicPlayRunnable(var soudSoxBusiness: SoudSoxBusiness) : Runnable {
+
+        override fun run() {
+            val business = soudSoxBusiness;
+            val lifecycle = business.iAgent.getThisLifecycle() ?: return
+            while (lifecycle.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+                val byteArray = business.blockingQueue.take()
+                business.audioTrack?.write(byteArray, business.offset, soudSoxBusiness.readSize - business.offset)
+            }
+        }
     }
 
     private fun destroyMeminfo() {
@@ -185,21 +213,6 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
     }
 
     var readSize = 0;
-
-    /**
-     * 写入数据，播放音乐
-     */
-    class MusicPlayRunnable(var soudSoxBusiness: SoudSoxBusiness) : java.lang.Runnable {
-
-        override fun run() {
-            val lifecycle = soudSoxBusiness.iAgent.getThisLifecycle() ?: return
-            while (lifecycle.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
-                val byteArray = soudSoxBusiness.blockingQueue.take()
-                soudSoxBusiness.audioTrack?.write(byteArray, 44, soudSoxBusiness.readSize-44)
-            }
-        }
-    }
-
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
         destroyMeminfo()

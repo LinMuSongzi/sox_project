@@ -32,13 +32,12 @@ public class WavAnalysisBusiness extends BaseWrapBusiness<IViewInstance> impleme
         try {
             input.read(bytesOne);
             musicInfo = new MusicInfo();
-            musicInfo.setChannel(reductionByteToInt4(bytesOne[0x16], bytesOne[0x17], bytesOne[0x18], bytesOne[0x19]));
+            musicInfo.setChannel(reductionByteToInt4(bytesOne[0x16]));
             musicInfo.setBit((reductionByteToInt4(bytesOne[0x22], bytesOne[0x23])));
             musicInfo.setSimpleRate(reductionByteToInt4(bytesOne[0x18], bytesOne[0x19], bytesOne[0x1a], bytesOne[0x1b]));
             if (bytesOne[0x12] == 0x12) {
             } else if (bytesOne[0x12] == 0x10) {
                 musicInfo.setHeadBitSize(44);
-
             }
             Log.i(TAG, "handlerBusiness: musicInfo = " + musicInfo);
         } catch (IOException e) {
