@@ -11,4 +11,17 @@ class MusicInfo {
     }
 
 
+    private var dataSize: Long? = null
+
+
+    fun getDataSize():Long =
+        if (simpleRate == 0) 0
+        else {
+            if (dataSize == null) (simpleRate * channel * bit / 8L).let {
+                dataSize = it
+                it
+            } else dataSize!!
+        }
+
+
 }

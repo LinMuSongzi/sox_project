@@ -15,10 +15,10 @@ class EffectsBean(
     val content: String?,
     @SerializedName("e_name")
     val eName: String?,
-    val r_name:String?
+    val r_name:String?,
 ) : Parcelable, BaseChooseBean(){
 
-
+    var values: Array<String>? = null
     var charParams:CharArray? = null
 
 }

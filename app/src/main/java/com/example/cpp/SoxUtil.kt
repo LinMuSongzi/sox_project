@@ -117,6 +117,19 @@ object SoxUtil {
     @Nullable
     external fun buildMusicByEffectInfo(effectRealName: String?,charArray: CharArray?,byteArray: ByteArray):ByteArray
 
+    @Nullable
+    fun buildMusicByEffectInfoFile(effectsBean: EffectsBean?,path:String,byteArray: ByteArray):Int{
+        return buildMusicByEffectInfoFile(effectsBean?.r_name, effectsBean?.values?.get(0),path,effectsBean?.charParams,byteArray)
+    }
+
+//    @JvmStatic
+//    @Nullable
+//    external fun buildMusicByEffectInfoFile(effectRealName: String?,values:Array<String>?,path:String,charArray: CharArray?,byteArray: ByteArray):Int
+
+    @JvmStatic
+    @Nullable
+    external fun buildMusicByEffectInfoFile(effectRealName: String?,values:String?,path:String,charArray: CharArray?,byteArray: ByteArray):Int
+
     @JvmStatic
     external fun buildMusic(
         fileInputPath: String =  //"${BASE_URL}/我的刻苦铭心的恋人.mp3"
@@ -133,8 +146,8 @@ object SoxUtil {
         }
     ): Int
 
-    @JvmStatic
-    external fun handlerSteam(byteArray: ByteArray):ByteArray
+//    @JvmStatic
+//    external fun handlerSteam(byteArray: ByteArray):ByteArray
 
     @JvmStatic
     external fun initSox(): Int

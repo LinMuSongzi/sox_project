@@ -57,18 +57,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         // Example of a call to a native method
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()
-        binding.idPlayText.setOnClickListener {
 
-            SoudSoxBusiness::class.java.instanceByVm(
-                MusicEffectsViewModel::class.java,
-                business.topViewModelProvider()
-            )?.observer(musicPath)
-
-//            SoxUtil.exoPlaySImple(this, null,
-//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
-            //SoxUtil.FILE_MP3.absolutePath)
-//            SoxUtil.exeuteComment("soxi ${SoxUtil.BASE_URL}/千山万水.mp3")
-        }
 
         val launch = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             if (it) {
@@ -100,6 +89,13 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
+                }
+
+                binding.idPlayText.setOnClickListener {
+                    SoudSoxBusiness::class.java.instanceByVm(
+                        MusicEffectsViewModel::class.java,
+                        business.topViewModelProvider()
+                    )?.observer(musicPath)
                 }
             }
         }

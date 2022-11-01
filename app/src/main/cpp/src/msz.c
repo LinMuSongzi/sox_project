@@ -229,6 +229,8 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
 //    jsize size = (*env)->GetArrayLength(env,byte_array);
     int init_size = (*env)->GetArrayLength(env, byte_array);
 
+//    size_t si
+
     size_t size = init_size;
 
     char *bytearr = mallocByte(init_size);
@@ -239,7 +241,7 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
 
     assert(in = sox_open_mem_read(bytearr, init_size, NULL, NULL, "wav"));
 
-    assert(out = sox_open_mem_write(output_chars, size, &in->signal, NULL, "wav", NULL));
+    assert(out = sox_open_memstream_write(&output_chars, &size, &in->signal, NULL, "wav", NULL));
 
     sox_effects_chain_t *chain;
     sox_effect_t *e;
@@ -247,8 +249,8 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
 
     chain = sox_create_effects_chain(&in->encoding, &out->encoding);
 
-//    char * eff = (*env)->GetStringUTFChars(env,effect,0);
-
+    char * eff = (*env)->GetStringUTFChars(env,effect,0);
+    __android_log_print(ANDROID_LOG_INFO, "SOX", "%s", eff);
     //创建一个最简单的效果，输入文件
 //    e = sox_create_effect(sox_find_effect("input"));
 //    args[0] = (char *) in, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
@@ -256,7 +258,7 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
 //    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
 //    free(e);
 
-    e = sox_create_effect(sox_find_effect("bass"));
+    e = sox_create_effect(sox_find_effect(eff));
     args[0] = "25";
     assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
     //增加效果到效果链
@@ -289,5 +291,100 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
     (*env)->SetByteArrayRegion(env, jbyteArray, 0, init_size2, b);//赋值到jbyteArray
     __android_log_print(ANDROID_LOG_INFO, "SOX", "%s", "输出~~~~~~");
     return jbyteArray;
+
+}
+
+
+JNIEXPORT jint JNICALL
+Java_com_example_cpp_SoxUtil_buildMusicByEffectInfoFile(JNIEnv *env, jclass clazz,
+                                                        jstring effect_real_name,
+                                                        jstring values, jstring outputPath_java,
+                                                        jcharArray char_array,
+                                                        jbyteArray byte_array) {
+    int init_size2 = (*env)->GetArrayLength(env, byte_array);
+//    if (effect == NULL) {
+//        return byte_array;
+//    }
+    char *outputPath = (*env)->GetStringUTFChars(env, outputPath_java, 0);
+    static sox_format_t * in, * out; /* input and output files */
+    sox_effects_chain_t * chain;
+    sox_effect_t * e;
+    char * args[10];
+
+    char *bytearr = mallocByte(init_size2);
+//    char *output_chars = mallocByte(init_size2);
+    (*env)->GetByteArrayRegion(env, byte_array, 0, init_size2, bytearr);
+
+//    assert(argc == 3);
+
+    /* All libSoX applications must start by initialising the SoX library */
+    assert(sox_init() == SOX_SUCCESS);
+
+    /* Open the input file (with default parameters) */
+    assert(in = sox_open_mem_read(bytearr, init_size2, NULL, NULL,"wav"));
+
+    /* Open the output file; we must specify the output signal characteristics.
+     * Since we are using only simple effects, they are the same as the input
+     * file characteristics */
+    assert(out = sox_open_write(outputPath, &in->signal, NULL, "wav", NULL, NULL));
+
+    /* Create an effects chain; some effects need to know about the input
+     * or output file encoding so we provide that information here */
+    chain = sox_create_effects_chain(&in->encoding, &out->encoding);
+
+    /* The first effect in the effect chain must be something that can source
+     * samples; in this case, we use the built-in handler that inputs
+     * data from an audio file */
+    e = sox_create_effect(sox_find_effect("input"));
+    args[0] = (char *)in, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+    /* This becomes the first `effect' in the chain */
+    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+    free(e);
+
+    /* Create the `vol' effect, and initialise it with the desired parameters: */
+    e = sox_create_effect(sox_find_effect("vol"));
+    args[0] = "3dB", assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+    /* Add the effect to the end of the effects processing chain: */
+    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+    free(e);
+
+    /* Create the `flanger' effect, and initialise it with default parameters: */
+    e = sox_create_effect(sox_find_effect("flanger"));
+    assert(sox_effect_options(e, 0, NULL) == SOX_SUCCESS);
+    /* Add the effect to the end of the effects processing chain: */
+    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+    free(e);
+
+    //(*env)->GetStringUTFChars(env, effect_real_name, 0)
+    //创建一个最简单的效果bass，输入文件
+    e = sox_create_effect(sox_find_effect("bass"));
+    if(values!=NULL) {
+        args[0] = (*env)->GetStringUTFChars(env, values, 0);
+    }else{
+        args[0] = "10";
+    }
+
+    assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+    //增加效果到效果链
+    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+    free(e);
+
+    /* The last effect in the effect chain must be something that only consumes
+     * samples; in this case, we use the built-in handler that outputs
+     * data to an audio file */
+    e = sox_create_effect(sox_find_effect("output"));
+    args[0] = (char *)out, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+    free(e);
+
+    /* Flow samples through the effects processing chain until EOF is reached */
+    sox_flow_effects(chain, NULL, NULL);
+
+    /* All done; tidy up: */
+    sox_delete_effects_chain(chain);
+    sox_close(out);
+    sox_close(in);
+    sox_quit();
+    return 0;
 
 }
