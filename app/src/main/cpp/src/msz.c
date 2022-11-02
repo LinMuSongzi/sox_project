@@ -239,9 +239,15 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
 
     static sox_format_t *out, *in;
 
-    assert(in = sox_open_mem_read(bytearr, init_size, NULL, NULL, NULL));
+    sox_rate_t rate = 24000;
+    struct sox_signalinfo_t signalinfo = {rate,2,16};
+//    struct sox_encodings_info_t encodingsInfo = {sox_encodings_none  , "Unsigned PCM" , "Unsigned Integer PCM"};
 
-    assert(out = sox_open_memstream_write(&output_chars, &size, &in->signal, NULL, NULL, NULL));
+
+
+    assert(in = sox_open_mem_read(bytearr, init_size, &signalinfo, NULL, "sox"));
+
+    assert(out = sox_open_memstream_write(&output_chars, &size, &in->signal, NULL, "sox", NULL));
 
     sox_effects_chain_t *chain;
     sox_effect_t *e;
@@ -265,11 +271,11 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfo(JNIEnv *env, jclass clazz, j
     assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
     free(e);
 
-    //输出到文件的效果器
-    e = sox_create_effect(sox_find_effect("output"));
-    args[0] = (char *) out, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
-    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
-    free(e);
+//    //输出到文件的效果器
+//    e = sox_create_effect(sox_find_effect("output"));
+//    args[0] = (char *) out, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+//    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+//    free(e);
 
     //让整个效果器运行起来，直到遇到eof
     sox_flow_effects(chain, NULL, NULL);
@@ -314,8 +320,8 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfoFile(JNIEnv *env, jclass claz
                                                         jcharArray char_array,
                                                         jbyteArray byte_array) {
     int init_size2 = (*env)->GetArrayLength(env, byte_array);
-//    if (effect == NULL) {
-//        return byte_array;
+//    if (effect_real_name == NULL) {
+//        return 0;
 //    }
     char *outputPath = (*env)->GetStringUTFChars(env, outputPath_java, 0);
     static sox_format_t * in, * out; /* input and output files */
@@ -375,7 +381,6 @@ Java_com_example_cpp_SoxUtil_buildMusicByEffectInfoFile(JNIEnv *env, jclass claz
     }else{
         args[0] = "10";
     }
-
     assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
     //增加效果到效果链
     assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);

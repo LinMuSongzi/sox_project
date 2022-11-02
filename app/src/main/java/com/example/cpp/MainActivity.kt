@@ -87,7 +87,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
                 binding.idPlayText.setOnClickListener {
 
 
-//                    exoPlaySImple(MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())!!)
+//                    exoPlaySImple(MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())!!,"${BASE_URL}wavTest2.mp3")
 
                     SoudSoxBusiness::class.java.instanceByVm(
                         MusicEffectsViewModel::class.java,

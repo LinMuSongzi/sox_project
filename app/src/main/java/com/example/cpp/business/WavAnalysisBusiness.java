@@ -91,7 +91,7 @@ public class WavAnalysisBusiness extends BaseWrapBusiness<IViewInstance> impleme
     }
 
     public static void writeWaveFileHeader(byte[] header, long totalAudioLen,
-                                     long totalDataLen, long longSampleRate, int channels, long byteRate)
+                                     long totalDataLen, int sampleRate, int channels, int byteRate)
             throws IOException {
         /**
          *
@@ -129,10 +129,10 @@ public class WavAnalysisBusiness extends BaseWrapBusiness<IViewInstance> impleme
         header[21] = 0;
         header[22] = (byte) channels;
         header[23] = 0;
-        header[24] = (byte) (longSampleRate & 0xff);
-        header[25] = (byte) ((longSampleRate >> 8) & 0xff);
-        header[26] = (byte) ((longSampleRate >> 16) & 0xff);
-        header[27] = (byte) ((longSampleRate >> 24) & 0xff);
+        header[24] = (byte) (sampleRate & 0xff);
+        header[25] = (byte) ((sampleRate >> 8) & 0xff);
+        header[26] = (byte) ((sampleRate >> 16) & 0xff);
+        header[27] = (byte) ((sampleRate >> 24) & 0xff);
         header[28] = (byte) (byteRate & 0xff);
         header[29] = (byte) ((byteRate >> 8) & 0xff);
         header[30] = (byte) ((byteRate >> 16) & 0xff);
