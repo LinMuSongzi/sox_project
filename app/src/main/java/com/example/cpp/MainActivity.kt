@@ -7,7 +7,6 @@ import android.os.Environment
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import com.example.cpp.SoxUtil.exoPlaySImple
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
 import com.example.cpp.business.SoudSoxBusiness
@@ -16,10 +15,10 @@ import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.musongzi.comment.ExtensionMethod.convertFragment
 import com.musongzi.comment.ExtensionMethod.instance
-import com.musongzi.comment.ExtensionMethod.instanceByVm
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.activity.MszFragmentActivity
 import com.musongzi.core.itf.INotifyDataSetChanged
+import com.psyone.sox.SoxProgramHandler.exoPlaySImple
 import java.io.File
 
 class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
@@ -64,7 +63,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
                 binding.idPlayText.setOnClickListener {
 
 
-                    exoPlaySImple(MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())!!,"${BASE_URL}wavTest2.mp3")
+                    exoPlaySImple(this,this,"${BASE_URL}wavTest2.mp3")
 
 //                    SoudSoxBusiness::class.java.instanceByVm(
 //                        MusicEffectsViewModel::class.java,
