@@ -52,7 +52,7 @@ abstract class RefreshFrament<V :MszViewModel<*, *>, D :ViewDataBinding, Item> :
     @SuppressLint("NotifyDataSetChanged")
     override fun notifyDataSetChanged() {
         super.notifyDataSetChanged()
-        Log.i(TAG, "notifyDataSetChanged: size = "+(recycleView()?.adapter as TypeSupportAdaper<*>).list)
+//        Log.i(TAG, "notifyDataSetChanged: size = "+(recycleView()?.adapter as TypeSupportAdaper<*>).list)
         recycleView()?.adapter?.notifyDataSetChanged()
     }
 

@@ -4,10 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.example.cpp.SoxUtil.exoPlaySImple
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
 import com.example.cpp.business.SoudSoxBusiness
@@ -35,13 +35,6 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setChildMainView(binding.root)
-
-//        binding.idThisChooseTitle.setOnClickListener {
-//
-//
-//        }
-
-
         MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())?.apply {
             runOnUiThread {
                 MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(this) {
@@ -92,6 +85,10 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
                 }
 
                 binding.idPlayText.setOnClickListener {
+
+
+//                    exoPlaySImple(MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())!!)
+
                     SoudSoxBusiness::class.java.instanceByVm(
                         MusicEffectsViewModel::class.java,
                         business.topViewModelProvider()
@@ -139,20 +136,14 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         init {
             System.loadLibrary("msz_sox")
             val state = SoxUtil.initSox()
-            Log.i(TAG, ": SoxUtil ini $state")
+//            Log.i(TAG, ": SoxUtil ini $state")
 //            System.loadLibrary("msz")
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun notifyDataSetChanged() {
-        Log.i(
-            TAG,
-            "notifyDataSetChanged: 1231231231231231231  itemCount = ${binding.idRecyclerView.adapter?.itemCount}"
-        )
-//        runOnUiThread {
         binding.idRecyclerView.adapter?.notifyDataSetChanged()
-//        }
     }
 
     override fun notifyDataSetChangedItem(postiont: Int) {

@@ -12,12 +12,20 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.cpp.FileUtil.copyFile
+import com.example.cpp.business.SoxAudioProcessors
 import com.example.cpp.data.EffectsBean
+import com.example.cpp.vm.MusicEffectsViewModel
+import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem.fromUri
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Player.STATE_READY
+import com.google.android.exoplayer2.audio.AudioCapabilities
+import com.google.android.exoplayer2.audio.AudioSink
+import com.google.android.exoplayer2.audio.DefaultAudioSink
 import com.google.android.exoplayer2.ui.PlayerControlView
+import com.musongzi.core.base.business.BaseMapBusiness
+import com.musongzi.core.base.vm.DataDriveViewModel
 import com.musongzi.core.util.ActivityThreadHelp
 import java.io.File
 
@@ -33,18 +41,18 @@ object SoxUtil {
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun exoPlaySImple(
-        lifecycleOwner: LifecycleOwner,
-        playerView: PlayerControlView? = null,
+    fun <T : DataDriveViewModel<*>> exoPlaySImple(
+        viewModel: T,
         path: String? = "${BASE_URL}/我的刻苦铭心的恋人.mp3"
     ) {
-        val context = (lifecycleOwner as? Context)?:(lifecycleOwner as Fragment).requireContext()
-        if (playerView?.tag != null) {
-            val p = playerView.tag as? Player
-            if (true == p?.isPlaying) {
-                p?.pause()
+        val context = (viewModel.getThisLifecycle() as? Context)?:(viewModel.getThisLifecycle() as Fragment).requireContext()
+        val ePlayer = viewModel.localSavedStateHandle().get<ExoPlayer>("ExoPlayer")
+        if (ePlayer != null) {
+//            val p = playerView.tag as? Player
+            if (ePlayer.isPlaying) {
+                ePlayer.pause()
             } else {
-                p?.play()
+                ePlayer.play()
             }
             return
         }
@@ -59,18 +67,35 @@ object SoxUtil {
         }
 
         //1. 创建播放器
-        val player = ExoPlayer.Builder(context).build()
+        val player = ExoPlayer.Builder(context).setRenderersFactory(object :DefaultRenderersFactory(context){
+            override fun buildAudioSink(
+                context: Context,
+                enableFloatOutput: Boolean,
+                enableAudioTrackPlaybackParams: Boolean,
+                enableOffload: Boolean
+            ): AudioSink? {
+                return DefaultAudioSink.Builder()
+                    .setAudioCapabilities(AudioCapabilities.getCapabilities(context))
+                    .setEnableFloatOutput(enableFloatOutput)
+                    .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
+                    .setAudioProcessors(arrayOf(SoxAudioProcessors()))
+                    .setOffloadMode(
+                        if (enableOffload) DefaultAudioSink.OFFLOAD_MODE_ENABLED_GAPLESS_REQUIRED else DefaultAudioSink.OFFLOAD_MODE_DISABLED
+                    )
+                    .build()
+            }
+        }).build()
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (STATE_READY == playbackState) {
-                    playerView?.tag = player
+                    viewModel.localSavedStateHandle()["ExoPlayer"] = player
                 }
             }
         })
 //        player.printCurPlaybackState("init")  //  此时处于STATE_IDLE = 1;
 
         //2. 播放器和播放器容器绑定
-        playerView?.player = player
+//        playerView?.player = player
 
         //3. 设置数据源
         //音频
@@ -87,7 +112,7 @@ object SoxUtil {
         //5. 调用prepare开始加载准备数据，该方法时异步方法，不会阻塞ui线程
         player.prepare()
         player.play() //  此时处于 STATE_BUFFERING = 2;
-        lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        viewModel.getThisLifecycle()?.lifecycle?.addObserver(object : DefaultLifecycleObserver {
             override fun onDestroy(owner: LifecycleOwner) {
 //                player.pause()
                 player.stop()

@@ -133,7 +133,7 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
                         val array: Array<String> = values!!
                         if (System.currentTimeMillis() - last > 1000) {
                             array[0] = (array[0].toInt() + 5).toString();
-                            if (array[0] == "50") {
+                            if (array[0] == "100") {
                                 array[0] = "5"
                             }
                         }
