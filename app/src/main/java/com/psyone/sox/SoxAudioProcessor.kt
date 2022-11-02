@@ -1,41 +1,24 @@
-package com.example.cpp.business
+package com.psyone.sox
 
-import android.media.AudioAttributes
-import android.media.AudioFormat
-import android.media.AudioManager
-import android.media.AudioTrack
 import android.util.Log
-import com.example.cpp.SoxUtil
-import com.example.cpp.SoxUtil.TAG
-import com.example.cpp.data.EffectsBean
+import com.example.cpp.business.SoudSoxBusiness
+import com.example.cpp.business.WavAnalysisBusiness
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.audio.AudioProcessor
 import com.google.android.exoplayer2.audio.AudioProcessor.EMPTY_BUFFER
 import com.google.android.exoplayer2.audio.AudioProcessor.UnhandledAudioFormatException
+import com.psyone.sox.SoxProgramHandler.TAG
+import com.psyone.sox.SoxProgramHandler.exampleConvertByPcmData
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 
-class SoxAudioProcessors : AudioProcessor {
+class SoxAudioProcessor : AudioProcessor {
 
 
     private var enabled: Boolean = true
     private var inputEnded = false;
     private lateinit var format: AudioProcessor.AudioFormat
 
-
-    val audioTrack = AudioTrack(
-        AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_MEDIA)
-            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-            .build(),
-        AudioFormat.Builder()
-            .setSampleRate(SoudSoxBusiness.SAMPLE_RATE_INHZ)
-            .setEncoding(SoudSoxBusiness.AUDIO_FORMAT)
-            .setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build(),
-        SoudSoxBusiness.minBufferSize,
-        AudioTrack.MODE_STREAM,
-        AudioManager.AUDIO_SESSION_ID_GENERATE
-    )
 
     private var offset = 44
 
@@ -56,7 +39,7 @@ class SoxAudioProcessors : AudioProcessor {
                 operateBytes,
                 size, size + offset, inputAudioFormat.sampleRate, channelCount, size.toInt() * 10
             )
-            audioTrack.play()
+//            audioTrack.play()
 //            readByte.cop
         } else AudioProcessor.AudioFormat.NOT_SET
     }
@@ -76,32 +59,24 @@ class SoxAudioProcessors : AudioProcessor {
         return enabled
     }
 
-    var effectsBean: EffectsBean? = EffectsBean("bass", "", "", "").apply {
-        values = arrayOf("50")
-    }
+//    var effectsBean: EffectsBean? = EffectsBean("bass", "", "", "").apply {
+//        values = arrayOf("50")
+//    }
     var outputByteBuffer: ByteBuffer = EMPTY_BUFFER
 
     var offsetOther = 0
     override fun queueInput(inputBuffer: ByteBuffer) {
-
-
         if (inputBuffer.hasRemaining()) {
             val limite = inputBuffer.limit()
-            Log.i(
-                TAG,
-                "queueInput: limit = $limite, offsetOther = $offsetOther "
+            inputBuffer.get(operateBytes, offset, limite)
+//            audioTrack.write(operateBytes,offset,limite)
+            operateBytes = exampleConvertByPcmData(
+                operateBytes,
+                5.toString(),
             )
-            inputBuffer.get(operateBytes, offset, inputBuffer.limit())
-//            offsetOther += limite
-//            if (offsetOther == operateBytes.size - offset - limite) {
-                SoxUtil.buildMusicByEffectInfoFile(
-                    effectsBean,
-                    SoudSoxBusiness.PATH_OUTPUT.absolutePath,
-                    operateBytes
-                )
-                openWriteStream()
-                offsetOther = 0
-//            }
+            outputByteBuffer = ByteBuffer.allocate(limite)
+            outputByteBuffer.put(operateBytes, offset, limite)
+            outputByteBuffer.flip()
         }
     }
 
@@ -114,13 +89,9 @@ class SoxAudioProcessors : AudioProcessor {
     }
 
     override fun getOutput(): ByteBuffer {
-        if (offsetOther == 0) {
-            val buffer: ByteBuffer = this.outputByteBuffer
-            this.outputByteBuffer = EMPTY_BUFFER
-            return buffer
-        } else {
-            return EMPTY_BUFFER
-        }
+        val buffer = this.outputByteBuffer
+        this.outputByteBuffer = EMPTY_BUFFER
+        return buffer
     }
 
     private fun openWriteStream() {

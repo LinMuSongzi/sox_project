@@ -136,17 +136,13 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
                         }
                     }
                 }
-                SoxUtil.buildMusicByEffectInfoFile(
+                val writeByte = SoxUtil.buildMusicByEffectInfo(
                     ebean,
-                    PATH_OUTPUT.absolutePath,
                     byteRead.copyOf()
                 )
-                business.writeByte = business.openStream()
-                business.writeByte?.let {
-                    business.audioTrack?.write(
-                        it, 0, it.size
-                    )
-                }
+
+                business.audioTrack?.write(writeByte, business.offset, writeByte.size-business.offset)
+
                 business.readSize =
                     inputStream.read(byteRead, business.offset, byteRead.size - business.offset)
             }

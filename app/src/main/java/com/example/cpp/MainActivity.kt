@@ -57,42 +57,19 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
                 if (SoxUtil.FILE_MP3.exists()) {
                     SoxUtil.FILE_MP3.delete()
                 }
-                binding.idBuildMusicText.setOnClickListener {
-                    try {
-//                        val file = File(cacheDir,"haha.mp3")
-//                        if(file.exists() || file.length() > 0){
-                        if (SoxUtil.FILE_MP3.exists()) {
-                            SoxUtil.show("已经构建完成~")
-                            return@setOnClickListener
-                        }
-                        try {
-                            SoxUtil.buildMusic2(Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav")
-                            SoxUtil.show("构建music 成功~")
-                        } catch (e: Exception) {
-                            SoxUtil.show("构建music 失败~~~~！！！！！！！！！！！~")
-                            e.printStackTrace()
-                        }
-
-//                        }else{
-//                            val mp3 = (Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3")
-//                            SoxUtil.copy(mp3,file)
-//                            Log.i(TAG, "onCreate: copy succed")
-//                            binding.idBuildMusicText.performClick()
-//                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
+//                binding.idBuildMusicText.setOnClickListener {
+//
+//                }
 
                 binding.idPlayText.setOnClickListener {
 
 
-//                    exoPlaySImple(MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())!!,"${BASE_URL}wavTest2.mp3")
+                    exoPlaySImple(MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())!!,"${BASE_URL}wavTest2.mp3")
 
-                    SoudSoxBusiness::class.java.instanceByVm(
-                        MusicEffectsViewModel::class.java,
-                        business.topViewModelProvider()
-                    )?.observer(musicPath)
+//                    SoudSoxBusiness::class.java.instanceByVm(
+//                        MusicEffectsViewModel::class.java,
+//                        business.topViewModelProvider()
+//                    )?.observer(musicPath)
                 }
             }
         }
@@ -132,13 +109,6 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         val musicPath =
             Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
-
-        init {
-            System.loadLibrary("msz_sox")
-            val state = SoxUtil.initSox()
-//            Log.i(TAG, ": SoxUtil ini $state")
-//            System.loadLibrary("msz")
-        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

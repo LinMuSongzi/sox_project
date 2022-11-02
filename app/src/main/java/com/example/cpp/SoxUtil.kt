@@ -2,7 +2,6 @@ package com.example.cpp
 
 import android.content.Context
 import android.os.Build
-import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.Nullable
@@ -12,9 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.cpp.FileUtil.copyFile
-import com.example.cpp.business.SoxAudioProcessors
+import com.psyone.sox.SoxAudioProcessor
 import com.example.cpp.data.EffectsBean
-import com.example.cpp.vm.MusicEffectsViewModel
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem.fromUri
@@ -23,8 +21,6 @@ import com.google.android.exoplayer2.Player.STATE_READY
 import com.google.android.exoplayer2.audio.AudioCapabilities
 import com.google.android.exoplayer2.audio.AudioSink
 import com.google.android.exoplayer2.audio.DefaultAudioSink
-import com.google.android.exoplayer2.ui.PlayerControlView
-import com.musongzi.core.base.business.BaseMapBusiness
 import com.musongzi.core.base.vm.DataDriveViewModel
 import com.musongzi.core.util.ActivityThreadHelp
 import java.io.File
@@ -78,7 +74,7 @@ object SoxUtil {
                     .setAudioCapabilities(AudioCapabilities.getCapabilities(context))
                     .setEnableFloatOutput(enableFloatOutput)
                     .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-                    .setAudioProcessors(arrayOf(SoxAudioProcessors()))
+                    .setAudioProcessors(arrayOf(SoxAudioProcessor()))
                     .setOffloadMode(
                         if (enableOffload) DefaultAudioSink.OFFLOAD_MODE_ENABLED_GAPLESS_REQUIRED else DefaultAudioSink.OFFLOAD_MODE_DISABLED
                     )
@@ -123,24 +119,14 @@ object SoxUtil {
 
     }
 
-    //
-    @JvmStatic
-    @Deprecated("测试~")
-    external fun subtraction(one: Int, tow: Int): Int
-
-    @JvmStatic
-    external fun buildMusic2(i:String,fileOutputPath: String = (FILE_MP3.absolutePath).apply {
-        Log.i(TAG, "buildMusic: output file = $this")
-    }):Int
-
     @Nullable
     fun buildMusicByEffectInfo(effectsBean: EffectsBean?,byteArray: ByteArray):ByteArray{
-       return buildMusicByEffectInfo(effectsBean?.r_name,effectsBean?.charParams,byteArray)
+       return buildMusicByEffectInfo(effectsBean?.r_name,effectsBean?.values?.get(0),byteArray)
     }
 
     @JvmStatic
     @Nullable
-    external fun buildMusicByEffectInfo(effectRealName: String?,charArray: CharArray?,byteArray: ByteArray):ByteArray
+    external fun buildMusicByEffectInfo(effectRealName: String?,values: String?,byteArray: ByteArray):ByteArray
 
     @Nullable
     fun buildMusicByEffectInfoFile(effectsBean: EffectsBean?,path:String,byteArray: ByteArray):Int{
@@ -155,31 +141,6 @@ object SoxUtil {
     @Nullable
     external fun buildMusicByEffectInfoFile(effectRealName: String?,values:String?,path:String,charArray: CharArray?,byteArray: ByteArray):Int
 
-    @JvmStatic
-    external fun buildMusic(
-        fileInputPath: String =  //"${BASE_URL}/我的刻苦铭心的恋人.mp3"
-            (Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3").apply {
-                if (File(this).exists()) {
-                    Log.i(
-                        TAG,
-                        "buildMusic: 存在~ $this"
-                    )
-                }
-            },
-        fileOutputPath: String = (FILE_MP3.absolutePath).apply {
-            Log.i(TAG, "buildMusic: output file = $this")
-        }
-    ): Int
-
-//    @JvmStatic
-//    external fun handlerSteam(byteArray: ByteArray):ByteArray
-
-    @JvmStatic
-    external fun initSox(): Int
-
-
-    @JvmStatic
-    external fun exeuteComment(order: String): Int
 
     fun copy(mp3: String, file: File) {
         copyFile(File(mp3), file)
