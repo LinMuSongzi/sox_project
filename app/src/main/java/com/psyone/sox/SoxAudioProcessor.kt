@@ -16,11 +16,10 @@ class SoxAudioProcessor : AudioProcessor {
     private var enabled: Boolean = true
     private var inputEnded = false;
     private lateinit var format: AudioProcessor.AudioFormat
-
-
     private var offset = 44
-
-    private lateinit var operateBytes: ByteArray
+    private var operateBytes: ByteArray? = null
+    private var outputByteBuffer: ByteBuffer = EMPTY_BUFFER
+    private var lastLimite = 0;
 
     override fun configure(inputAudioFormat: AudioProcessor.AudioFormat): AudioProcessor.AudioFormat {
         if (inputAudioFormat.encoding != C.ENCODING_PCM_16BIT) {
@@ -28,27 +27,14 @@ class SoxAudioProcessor : AudioProcessor {
         }
         printlnAudioFormat(inputAudioFormat)
         format = inputAudioFormat
-
-        val size = 16L / 8 * inputAudioFormat.sampleRate * inputAudioFormat.channelCount / 10
-        operateBytes = ByteArray(offset + size.toInt())
-        return if (enabled) inputAudioFormat.apply {
-            writeWaveFileHeader(
-                operateBytes,
-                size, size + offset, inputAudioFormat.sampleRate, channelCount, size.toInt() * 10
-            )
-//            audioTrack.play()
-//            readByte.cop
-        } else AudioProcessor.AudioFormat.NOT_SET
+//      val size = 16L / 8 * inputAudioFormat.sampleRate * inputAudioFormat.channelCount / 10
+        return if (enabled) inputAudioFormat else AudioProcessor.AudioFormat.NOT_SET
     }
 
     private fun printlnAudioFormat(inputAudioFormat: AudioProcessor.AudioFormat) {
-        Log.i(
-            TAG,
-            "printlnAudioFormat: encoding = ${inputAudioFormat.encoding} , channelCount = ${inputAudioFormat.channelCount} ," +
-                    " bytesPerFrame = ${inputAudioFormat.bytesPerFrame} , sampleRate = ${inputAudioFormat.sampleRate} , ${16 / 8 * inputAudioFormat.sampleRate * inputAudioFormat.channelCount}"
+        Log.i(TAG, "printlnAudioFormat: encoding = ${inputAudioFormat.encoding} , channelCount = ${inputAudioFormat.channelCount} ," +
+                " bytesPerFrame = ${inputAudioFormat.bytesPerFrame} , sampleRate = ${inputAudioFormat.sampleRate} , ${16 / 8 * inputAudioFormat.sampleRate * inputAudioFormat.channelCount}"
         )
-
-
     }
 
     override fun isActive(): Boolean {
@@ -56,24 +42,38 @@ class SoxAudioProcessor : AudioProcessor {
         return enabled
     }
 
-    //    var effectsBean: EffectsBean? = EffectsBean("bass", "", "", "").apply {
-//        values = arrayOf("50")
-//    }
-    var outputByteBuffer: ByteBuffer = EMPTY_BUFFER
 
-    var offsetOther = 0
     override fun queueInput(inputBuffer: ByteBuffer) {
         if (inputBuffer.hasRemaining()) {
             val limite = inputBuffer.limit()
+            var operateBytes = this.operateBytes
+            if (operateBytes == null) {
+                operateBytes = ByteArray(offset + limite)
+                val byteRate = format.sampleRate * 16 * format.channelCount / 8
+                Log.i(TAG, "queueInput: operateBytes = ${operateBytes.size} , byteRate = $byteRate , limite = $limite")
+                writeWaveFileHeader(
+                    operateBytes,
+                    limite.toLong(),
+                    (limite + offset).toLong(), format.sampleRate, format.channelCount, byteRate
+                )
+                this.operateBytes = operateBytes
+            } else if (limite != lastLimite) {
+                Log.i(TAG, "queueInput: $limite != $lastLimite")
+                this.operateBytes = null
+                queueInput(inputBuffer)
+                return
+            }
+
             inputBuffer.get(operateBytes, offset, limite)
-//            audioTrack.write(operateBytes,offset,limite)
             operateBytes = exampleConvertByPcmData(
                 operateBytes,
                 5.toString(),
             )
-            outputByteBuffer = ByteBuffer.allocate(limite)
+            val outputByteBuffer = ByteBuffer.allocate(limite)
             outputByteBuffer.put(operateBytes, offset, limite)
             outputByteBuffer.flip()
+            this.outputByteBuffer = outputByteBuffer
+            this.lastLimite = limite
         }
     }
 

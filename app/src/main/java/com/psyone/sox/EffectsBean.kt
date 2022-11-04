@@ -1,4 +1,4 @@
-package com.example.cpp.data
+package com.psyone.sox
 
 import android.os.Parcelable
 import androidx.annotation.Keep
@@ -9,15 +9,13 @@ import kotlinx.android.parcel.Parcelize
 @Keep
 @Parcelize
 class EffectsBean(
-    @SerializedName("c_name")
-    val cName: String?,
-    @SerializedName("content")
+    val c_name: String?,
     val content: String?,
-    @SerializedName("e_name")
-    val eName: String?,
+    val e_name: String?,
     val r_name:String?,
 ) : Parcelable, BaseChooseBean(){
 
+    constructor(c_name: String?,e_name: String?,content: String?):this(c_name,content,e_name,e_name)
     var values: Array<String>? = null
     var charParams:CharArray? = null
 

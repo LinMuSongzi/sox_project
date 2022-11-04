@@ -9,8 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
-import com.example.cpp.business.SoudSoxBusiness
-import com.example.cpp.data.EffectsBean
+import com.psyone.sox.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.musongzi.comment.ExtensionMethod.convertFragment

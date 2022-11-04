@@ -3,7 +3,7 @@ import android.os.Parcelable
 
 
 import androidx.annotation.Keep
-import com.example.cpp.data.EffectsTopBean
+import com.psyone.sox.EffectsTopBean
 
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize

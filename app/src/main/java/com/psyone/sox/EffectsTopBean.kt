@@ -1,27 +1,23 @@
-package com.example.cpp.data
+package com.psyone.sox
 
 import android.os.Parcelable
 import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
-import com.musongzi.core.ExtensionCoreMethod.dataBindingInflate
 import com.musongzi.core.base.bean.BaseChooseBean
 import kotlinx.android.parcel.Parcelize
 
 @Keep
 @Parcelize
 data class EffectsTopBean(
-    @SerializedName("c_name")
-    val cName: String?,
-    @SerializedName("content")
+    val c_name: String?,
     val content: String?,
-    @SerializedName("e_name")
-    val eName: String?,
+    val e_name: String?,
     val r_name:String?,
-    @SerializedName("e_child")
-    val childs: List<EffectsBean>? = null,
+    val e_child: List<EffectsBean>? = null,
     var isChildChoose:Boolean = false
 ) : Parcelable, BaseChooseBean() {
 
+
+    constructor(c_name: String,e_child: List<EffectsBean>):this(c_name,null,null,null,e_child = e_child)
 
 
     override fun isChoose(): Boolean {
@@ -29,7 +25,7 @@ data class EffectsTopBean(
     }
 
     override fun choose(b: Boolean) {
-        if (childs != null && childs.isNotEmpty()) {
+        if (e_child != null && e_child.isNotEmpty()) {
             super.choose(b)
         }
     }

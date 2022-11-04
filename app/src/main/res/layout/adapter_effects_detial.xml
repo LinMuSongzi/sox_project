@@ -7,7 +7,7 @@
 
         <variable
             name="bean"
-            type="com.example.cpp.data.EffectsBean" />
+            type="com.psyone.sox.EffectsBean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:paddingVertical="5dp"
             android:paddingHorizontal="10dp"
-            setTextNormal="@{bean.CName}"
+            setTextNormal="@{bean.c_name}"
             android:textColor="@color/text_color_normal"
             android:textSize="14dp"
             app:layout_constraintLeft_toLeftOf="parent"

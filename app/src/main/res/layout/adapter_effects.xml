@@ -7,7 +7,7 @@
 
         <variable
             name="bean"
-            type="com.example.cpp.data.EffectsTopBean" />
+            type="com.psyone.sox.EffectsTopBean" />
     </data>
 
     <LinearLayout
@@ -23,7 +23,7 @@
 
             <TextView
                 android:id="@+id/id_name"
-                setTextNormal="@{bean.CName}"
+                setTextNormal="@{bean.c_name}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="15dp"

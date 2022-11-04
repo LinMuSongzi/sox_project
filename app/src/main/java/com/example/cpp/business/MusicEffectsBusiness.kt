@@ -1,27 +1,19 @@
 package com.example.cpp.business
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cpp.data.EffectsBean
-import com.example.cpp.data.EffectsTopBean
+import com.psyone.sox.EffectsBean
+import com.psyone.sox.EffectsTopBean
 import com.example.cpp.databinding.AdapterEffectsBinding
 import com.example.cpp.databinding.AdapterEffectsDetialBinding
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.musongzi.comment.ExtensionMethod.saveStateChange
-import com.musongzi.comment.databinding.AdapterFileBinding
 import com.musongzi.comment.util.SourceImpl
-import com.musongzi.comment.util.setText
-import com.musongzi.comment.util.showImage
-import com.musongzi.comment.util.viewVisibility
 import com.musongzi.core.ExtensionCoreMethod.adapter
 import com.musongzi.core.ExtensionCoreMethod.linearLayoutManager
 import com.musongzi.core.base.adapter.ListAbstacyAdapter
-import com.musongzi.core.base.adapter.TypeSupportAdaper
-import com.musongzi.core.base.adapter.TypeSupportAdaper.Companion.ZERO
 import com.musongzi.core.base.business.BaseMapBusiness
 import com.musongzi.core.itf.page.ISource
-import com.musongzi.core.util.ScreenUtil
 
 class MusicEffectsBusiness : BaseMapBusiness<MusicEffectsViewModel>(),
     ISource<EffectsTopBean> by SourceImpl() {
@@ -47,7 +39,7 @@ class MusicEffectsBusiness : BaseMapBusiness<MusicEffectsViewModel>(),
                 }
                 if (i.isChoose()) {
                     if (adapter == null) {
-                        val s = SourceImpl<EffectsBean>(ArrayList(i.childs!!))
+                        val s = SourceImpl<EffectsBean>(ArrayList(i.e_child!!))
                         adapter = s.adapter(AdapterEffectsDetialBinding::class.java){childD,ci,_->
                             childD.root.setOnClickListener {
                                 chooseBean?.choose(false)
@@ -68,7 +60,7 @@ class MusicEffectsBusiness : BaseMapBusiness<MusicEffectsViewModel>(),
                         (adapter as? ListAbstacyAdapter<EffectsBean>)?.apply {
                             (list as? ArrayList)?.let { list ->
                                 list.clear()
-                                list.addAll(i.childs!!)
+                                list.addAll(i.e_child!!)
                             }
                             notifyDataSetChanged()
                         }

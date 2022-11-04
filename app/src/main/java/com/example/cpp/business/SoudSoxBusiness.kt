@@ -11,13 +11,14 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.example.cpp.SoxUtil
-import com.example.cpp.data.EffectsBean
+import com.psyone.sox.EffectsBean
 import com.example.cpp.data.MusicInfo
 import com.example.cpp.vm.MusicEffectsViewModel.Companion.CHOOSE_EFFECY_KEY
 import com.musongzi.comment.ExtensionMethod.getNextBusiness
 import com.musongzi.comment.ExtensionMethod.getSaveStateValue
 import com.musongzi.core.base.business.BaseMapBusiness
 import com.musongzi.core.base.vm.MszViewModel
+import com.psyone.sox.WavHelp.writeWaveFileHeader
 import okhttp3.internal.notify
 import okhttp3.internal.wait
 import java.io.*
@@ -209,7 +210,7 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             val size = musicInfo.getDataSize() / 10
             val rate = size * 10
             byteRead = ByteArray(musicInfo.headBitSize + size.toInt())
-            WavAnalysisBusiness.writeWaveFileHeader(
+            writeWaveFileHeader(
                 business.headBytes,
                 size,
                 size + business.offset,
