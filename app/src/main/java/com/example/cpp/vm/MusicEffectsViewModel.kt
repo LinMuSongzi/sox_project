@@ -21,21 +21,21 @@ class MusicEffectsViewModel : ApiViewModel<INotifyDataSetChanged, MusicEffectsBu
 
 
     fun loaderEffectsData() {
-//        getApi().effects.sub { ef ->
-//
-//            (getHolderBusiness().realData() as? ArrayList)?.let {
-////                Log.i(TAG, "loaderEffectsData: ${ef.data?.get(0)?.cName}")
-//                it.clear()
-//                it.addAll(ef.data!!)
-//                getHolderClient()
-//            }?.notifyDataSetChanged()
-//        }
+        getApi().effects.sub { ef ->
 
-        (getHolderBusiness().realData() as? ArrayList)?.let {
-            it.clear()
-            it.addAll(EFFECTS_ARRAY)
-            getHolderClient()
-        }?.notifyDataSetChanged()
+            (getHolderBusiness().realData() as? ArrayList)?.let {
+//                Log.i(TAG, "loaderEffectsData: ${ef.data?.get(0)?.cName}")
+                it.clear()
+                it.addAll(ef.data!!)
+                getHolderClient()
+            }?.notifyDataSetChanged()
+        }
+
+//        (getHolderBusiness().realData() as? ArrayList)?.let {
+//            it.clear()
+//            it.addAll(EFFECTS_ARRAY)
+//            getHolderClient()
+//        }?.notifyDataSetChanged()
 
 
     }

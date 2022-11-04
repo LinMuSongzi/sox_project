@@ -10,7 +10,7 @@ import java.io.File
 @Deprecated("已过期只是测试")
 object SoxUtil {
 
-    val BASE_URL: String = "http://192.168.1.106:8080"
+
     const val TAG = "SOX_UTIL"
     val FILE_PARENT = ActivityThreadHelp.getCurrentApplication().cacheDir
     val FILE_MP3 = File(FILE_PARENT, "qsws.wav")

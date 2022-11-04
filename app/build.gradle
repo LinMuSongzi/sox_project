@@ -57,6 +57,10 @@ android {
             // 签名
             signingConfig signingConfigs.shange
         }
+
+        debug{
+            manifestPlaceholders = [request_url: "http://192.168.1.106:8080/"]
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

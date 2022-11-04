@@ -2,8 +2,10 @@ package com.example.cpp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -17,6 +19,7 @@ import com.musongzi.comment.ExtensionMethod.instance
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.activity.MszFragmentActivity
 import com.musongzi.core.itf.INotifyDataSetChanged
+import com.musongzi.core.util.ActivityThreadHelp
 import com.psyone.sox.SoxProgramHandler.exoPlaySImple
 import java.io.File
 
@@ -107,6 +110,9 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         val musicPath =
             Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
+
+
+
     }
 
     @SuppressLint("NotifyDataSetChanged")

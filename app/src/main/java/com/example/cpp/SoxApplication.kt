@@ -1,19 +1,22 @@
 package com.example.cpp
 
-import android.app.Application
-import androidx.multidex.MultiDexApplication
+import android.content.pm.PackageManager
+import android.util.Log
 import com.musongzi.core.base.MszApplicaton
-import com.musongzi.core.base.manager.InstanceManager
 import com.musongzi.core.base.manager.ManagerInstanceHelp
 import com.musongzi.core.base.manager.RetrofitManager
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import java.lang.reflect.Method
+import com.musongzi.core.util.ActivityThreadHelp
 
-const val BASE_URL = "http://192.168.1.106:8080/"
+val BASE_URL = ActivityThreadHelp.getCurrentApplication().let {
+    val info = it.packageManager.getApplicationInfo(it.packageName, PackageManager.GET_META_DATA)
+    val requets = info.metaData?.getString("REQUEST_URL")
+    Log.i(TAG, "sox requets = $requets")
+    requets!!
+}
+
+const val TAG = "SoxApplication"
 
 class SoxApplication: MszApplicaton() {
-
 
 
     override fun getManagers(): Array<ManagerInstanceHelp>? = arrayOf(ManagerInstanceHelp.instanceOnReady{
@@ -21,5 +24,6 @@ class SoxApplication: MszApplicaton() {
             BASE_URL
         }
     })
+
 
 }
