@@ -3,11 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
-//plugins {
-//    id 'com.android.application'
-//    id 'org.jetbrains.kotlin.android'
-//}
-
 android {
     compileSdk 32
     sourceSets {
@@ -24,23 +19,33 @@ android {
         targetSdk 29
         versionCode 1
         versionName "1.0"
-        ndk {
-            abiFilters 'arm64-v8a'//armeabi-v7a'
-        }
+//        ndk {
+//            abiFilters 'arm64-v8a','armeabi-v7a'
+//        }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
                 cppFlags ''
+                abiFilters 'arm64-v8a','armeabi-v7a','x86'
             }
         }
     }
     signingConfigs {
-        shange {
-            storeFile file('playmusic.jks')//签名文件路径
-            storePassword "mdsoftware123"
-            keyAlias "mdsoftware"
-            keyPassword "mdsoftware123"  //签名密码
-            //签名md5 e84ab3c846c7cd71c971386f2992c34b
+        release {
+            Properties properties = new Properties()
+            InputStream inputStream = project.rootProject.file('signconfig.properties').newDataInputStream();
+            properties.load(inputStream)
+
+            def gradleStoreFile = properties.getProperty('storeFile');
+            def gradleStorePassword = properties.getProperty('storePassword');
+            def gradleKeyAlias = properties.getProperty('keyAlias');
+            def gradleKeyPassword = properties.getProperty('keyPassword');
+
+
+            storeFile file(gradleStoreFile)
+            storePassword gradleStorePassword
+            keyAlias gradleKeyAlias
+            keyPassword gradleKeyPassword
         }
     }
     buildTypes {
@@ -52,14 +57,15 @@ android {
             minifyEnabled false
             // 减少应用在运行时的内存消耗
             zipAlignEnabled true
-
+            manifestPlaceholders = [request_url: "http://192.168.1.106:8080/"]
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            // 签名
-            signingConfig signingConfigs.shange
+            signingConfig signingConfigs.release
         }
 
         debug{
-            manifestPlaceholders = [request_url: "http://192.168.1.106:8080/"]
+
+
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -73,6 +79,7 @@ android {
         cmake {
             path file('src/main/cpp/CMakeLists.txt')
             version '3.18.1'
+
         }
     }
 

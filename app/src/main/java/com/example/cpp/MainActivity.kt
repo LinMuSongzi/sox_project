@@ -36,15 +36,6 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setChildMainView(binding.root)
-        MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())?.apply {
-            runOnUiThread {
-                MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(this) {
-                    binding.chooseBinding.bean = it
-                }
-                getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
-                loaderEffectsData()
-            }
-        }
 
 //        showFragmentByte()
 
@@ -72,6 +63,18 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 //                        business.topViewModelProvider()
 //                    )?.observer(musicPath)
                 }
+
+                MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())?.apply {
+                    runOnUiThread {
+                        MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(this) {
+                            binding.chooseBinding.bean = it
+                        }
+                        getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
+                        loaderEffectsData()
+                    }
+                }
+
+
             }
         }
         launch.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
