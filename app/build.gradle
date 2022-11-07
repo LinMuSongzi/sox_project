@@ -64,7 +64,7 @@ android {
 
         debug{
 
-
+            manifestPlaceholders = [request_url: "http://192.168.1.106:8080/"]
             signingConfig signingConfigs.release
         }
     }

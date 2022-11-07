@@ -117,3 +117,28 @@ Java_com_psyone_sox_SoxProgramHandler_exampleConvertByPcmData(JNIEnv *env, jclas
 
 }
 
+JNIEXPORT jint JNICALL
+Java_com_psyone_sox_SoxProgramHandler_destoryWorkContext(JNIEnv *env, jobject thiz, jint context) {
+    return 1;
+};
+
+JNIEXPORT jbyteArray JNICALL
+Java_com_psyone_sox_SoxProgramHandler_dequeueOutput(JNIEnv *env, jobject thiz,
+                                                    jint context) { return 1; };
+
+JNIEXPORT jint JNICALL
+Java_com_psyone_sox_SoxProgramHandler_queueInput(JNIEnv *env, jobject thiz, jint context,
+                                                 jbyteArray byte_array, jint start_index,
+                                                 jint leng) { return 1; }
+
+JNIEXPORT jint JNICALL
+Java_com_psyone_sox_SoxProgramHandler_onAudioConfig(JNIEnv *env, jobject thiz, jint context,
+                                                    jint sample_rate, jint channels,
+                                                    jint bit) { return 1; }
+
+JNIEXPORT jint JNICALL
+Java_com_psyone_sox_SoxProgramHandler_createAudioWorkConetxt(JNIEnv *env, jobject thiz,
+                                                             jobject context,
+                                                             jint other) { return 1; }
+
+

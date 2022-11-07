@@ -19,7 +19,7 @@ import com.musongzi.comment.ExtensionMethod.instance
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.activity.MszFragmentActivity
 import com.musongzi.core.itf.INotifyDataSetChanged
-import com.musongzi.core.util.ActivityThreadHelp
+import com.psyone.sox.SoxProgramHandler
 import com.psyone.sox.SoxProgramHandler.exoPlaySImple
 import java.io.File
 
@@ -37,9 +37,9 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setChildMainView(binding.root)
 
-//        showFragmentByte()
 
-        // Example of a call to a native method
+        Log.i(TAG, "onCreate: createAudioWorkConetxt = ${SoxProgramHandler.createAudioWorkConetxt(this,0)}")
+
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()
 
