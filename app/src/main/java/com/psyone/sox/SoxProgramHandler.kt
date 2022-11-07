@@ -513,8 +513,6 @@ object SoxProgramHandler {
                 )
                 list.add(childBean)
             }
-
-
         }
         return list;
     }
