@@ -22,7 +22,7 @@
         android:theme="@style/Theme.Cpp"
         android:requestLegacyExternalStorage="true">
         <activity
-            android:name=".MainActivity"
+            android:name=".WebSocketActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,6 +44,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
+
+<!--        <activity android:name=".WebSocketActivity"-->
+<!--            android:launchMode="singleTask"-->
+<!--            />-->
 
     </application>
 

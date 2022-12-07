@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="bean"
+            type="com.example.cpp.WebSocketTestFragment" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:paddingHorizontal="20dp"
+        android:layout_height="match_parent">
+
+
+        <EditText
+            android:id="@+id/id_edittext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="请输入你要发送的内容"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:enabled="false"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:hint="正在接受信息...."
+            android:layout_marginBottom="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/id_action_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@={bean.receiverText}"
+            />
+
+        <Button
+            android:id="@+id/id_action_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="连接websocket服务器"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -2,7 +2,7 @@ package com.example.cpp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -18,12 +18,17 @@ import com.musongzi.comment.ExtensionMethod.convertFragment
 import com.musongzi.comment.ExtensionMethod.instance
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.activity.MszFragmentActivity
+import com.musongzi.core.base.business.itf.WebSocketEngine
+import com.musongzi.core.base.map.LocalSavedHandler
 import com.musongzi.core.itf.INotifyDataSetChanged
+import com.musongzi.core.itf.ISaveStateHandle
 import com.psyone.sox.SoxProgramHandler
 import com.psyone.sox.SoxProgramHandler.exoPlaySImple
+import org.java_websocket.client.WebSocketClient
 import java.io.File
 
-class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
+class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
+    ISaveStateHandle by LocalSavedHandler() {
 
 
     private lateinit var binding: ActivityMainBinding
@@ -31,14 +36,28 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 
     var fragment: Fragment? = null
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setChildMainView(binding.root)
 
+        runOnUiThread {
+            startActivity(Intent(this,WebSocketActivity::class.java))
+        }
 
-        Log.i(TAG, "onCreate: createAudioWorkConetxt = ${SoxProgramHandler.createAudioWorkConetxt(this,0)}")
+        Log.i(
+            TAG,
+            "onCreate: createAudioWorkConetxt = ${
+                SoxProgramHandler.createAudioWorkConetxt(
+                    this,
+                    0
+                )
+            }"
+        )
 
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()
@@ -56,7 +75,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
                 binding.idPlayText.setOnClickListener {
 
 
-                    exoPlaySImple(this,this,"${BASE_URL}wavTest2.mp3")
+                    exoPlaySImple(this, this, "${BASE_URL}wavTest2.mp3")
 
 //                    SoudSoxBusiness::class.java.instanceByVm(
 //                        MusicEffectsViewModel::class.java,
@@ -66,7 +85,9 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
 
                 MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())?.apply {
                     runOnUiThread {
-                        MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(this) {
+                        MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(
+                            this
+                        ) {
                             binding.chooseBinding.bean = it
                         }
                         getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
@@ -113,7 +134,6 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged {
         val musicPath =
             Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
-
 
 
     }
