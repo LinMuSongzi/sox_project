@@ -292,7 +292,7 @@ object ExtensionMethod {
      * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
      */
     @JvmStatic
-    fun <T> String.saveStateChange(holder: IHolderSavedStateHandle, v: T) {
+    fun <T> String.saveStateChange(holder: IHolderSavedStateHandle, v: T?) {
         holder.getHolderSavedStateHandle()[this] = v
     }
 
@@ -300,7 +300,7 @@ object ExtensionMethod {
      * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
      */
     @JvmStatic
-    fun <T> String.saveStateChange(saveStateHandle: ISaveStateHandle, v: T) {
+    fun <T> String.saveStateChange(saveStateHandle: ISaveStateHandle, v: T?) {
         saveStateHandle[this] = v
     }
 
@@ -470,6 +470,21 @@ object ExtensionMethod {
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
                 if (event?.action == KeyEvent.ACTION_UP) {
                     if (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_ENTER) {
+                        call(text.toString())
+                        return true
+                    }
+                }
+                return false
+            }
+        })
+    }
+
+    @JvmStatic
+    fun EditText.send(call: (String) -> Unit) {
+        setOnKeyListener(object : View.OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                if (event?.action == KeyEvent.ACTION_UP) {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
                         call(text.toString())
                         return true
                     }

@@ -1,5 +1,7 @@
 package com.musongzi.core.base.map
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.musongzi.core.itf.ISaveStateHandle
@@ -30,7 +32,13 @@ class SaveStateHandleWarp(private val stateHandle: SavedStateHandle) : ISaveStat
     }
 
     override fun <T> set(key: String, value: T?) {
-        return stateHandle.set(key, value)
+        if(Thread.currentThread() != Looper.getMainLooper().thread){
+            Handler(Looper.getMainLooper()).post{
+                stateHandle.set(key, value)
+            }
+            return
+        }
+        stateHandle.set(key, value)
     }
 
 

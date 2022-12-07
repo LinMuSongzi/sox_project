@@ -1,5 +1,7 @@
 package com.musongzi.core.base.map
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.musongzi.core.itf.ISaveStateHandle
@@ -10,8 +12,8 @@ import kotlin.collections.set
 /*** created by linhui * on 2022/7/27 */
 class LocalSavedHandler : ISaveStateHandle {
 
-    private val mRegular : HashMap<String, Any?> = HashMap()
-    private val mLiveDatas : HashMap<String, SavingStateLiveData<Any>> = HashMap()
+    private val mRegular: HashMap<String, Any?> = HashMap()
+    private val mLiveDatas: HashMap<String, SavingStateLiveData<Any>> = HashMap()
 
     private fun <T> getLiveDataInternal(
         key: String,
@@ -39,7 +41,7 @@ class LocalSavedHandler : ISaveStateHandle {
     }
 
     override fun <T> getLiveData(key: String): MutableLiveData<T> {
-       return getLiveDataInternal(key, false, null) as MutableLiveData<T>
+        return getLiveDataInternal(key, false, null) as MutableLiveData<T>
     }
 
 
@@ -75,6 +77,7 @@ class LocalSavedHandler : ISaveStateHandle {
         if (mutableLiveData != null) {
             // it will set value;
             mutableLiveData.setValue(value)
+
         } else {
             mRegular[key] = value
         }
@@ -83,21 +86,28 @@ class LocalSavedHandler : ISaveStateHandle {
 
     internal class SavingStateLiveData<T> : MutableLiveData<T> {
         private var mKey: String
-        private var mHandle: HashMap<String,Any?>? = null
+        private var mHandle: HashMap<String, Any?>? = null
 
-        constructor(handle: HashMap<String,Any?>, key: String, value: T) : super(value) {
+        constructor(handle: HashMap<String, Any?>, key: String, value: T) : super(value) {
             mKey = key
             mHandle = handle
         }
 
-        constructor(handle: HashMap<String,Any?>, key: String) : super() {
+        constructor(handle: HashMap<String, Any?>, key: String) : super() {
             mKey = key
             mHandle = handle
         }
 
         override fun setValue(value: T?) {
-            mHandle?.set(mKey, value)
-            super.setValue(value)
+            if(Thread.currentThread() == Looper.getMainLooper().thread) {
+                mHandle?.set(mKey, value)
+                super.setValue(value)
+            }else{
+                Handler(Looper.getMainLooper()).post{
+                    mHandle?.set(mKey, value)
+                    super.setValue(value)
+                }
+            }
         }
 
         fun detach() {

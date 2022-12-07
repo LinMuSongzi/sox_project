@@ -10,7 +10,7 @@ import com.musongzi.core.util.ActivityThreadHelp
 val BASE_URL = ActivityThreadHelp.getCurrentApplication().let {
     val info = it.packageManager.getApplicationInfo(it.packageName, PackageManager.GET_META_DATA)
     val requets = info.metaData?.getString("REQUEST_URL")
-    Log.i(TAG, "sox requets = $requets")
+//    Log.i(TAG, "sox requets = $requets")
     requets!!
 }
 

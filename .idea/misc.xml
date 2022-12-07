@@ -4,10 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/as_project/android_cpp_project/app/src/main/res/drawable/shape_gray1.xml" value="0.17" />
+        <entry key="..\:/as_project/android_cpp_project/app/src/main/res/layout/activity_content.xml" value="0.3572916666666667" />
         <entry key="..\:/as_project/android_cpp_project/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/as_project/android_cpp_project/app/src/main/res/layout/adapter_byte_show.xml" value="0.3729166666666667" />
         <entry key="..\:/as_project/android_cpp_project/app/src/main/res/layout/adapter_effects.xml" value="0.25" />
         <entry key="..\:/as_project/android_cpp_project/app/src/main/res/layout/adapter_effects_detial.xml" value="0.3875" />
+        <entry key="..\:/as_project/android_cpp_project/app/src/main/res/layout/fragment_web_socket_test.xml" value="0.3572916666666667" />
         <entry key="..\:/as_project/android_cpp_project/comment/src/main/res/layout/adapter_file.xml" value="0.35833333333333334" />
         <entry key="..\:/as_project/android_cpp_project/core/src/main/res/layout/activity_normal_fragment.xml" value="0.35833333333333334" />
         <entry key="..\:/as_project/android_cpp_project/core/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.17" />
