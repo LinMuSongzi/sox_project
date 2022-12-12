@@ -64,7 +64,7 @@ class WebSocketLifecycle private constructor(val savedStateHandle: ISaveStateHan
         const val MESSAGE_KEY = "msg_k"
         const val CLOSE_KEY = "close_k"
         const val ERROR_KEY = "error_k"
-        val URI_STRING = URI.create("ws://im-server.heartide.com:6060")//URI.create("ws://192.168.1.106:8080/ws")
+        val URI_STRING = URI.create("ws://im-server.heartide.com:6060/acc")//URI.create("ws://192.168.1.106:8080/ws")
 
         fun LifecycleOwner.registerWebSocket(savedStateHandle: ISaveStateHandle): WebSocketEngine {
             return WebSocketLifecycle(savedStateHandle).apply {
