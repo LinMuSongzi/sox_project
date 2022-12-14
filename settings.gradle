@@ -18,3 +18,4 @@ rootProject.name = "cpp"
 include ':app'
 include ':core'
 include ':comment'
+include ':textui'
