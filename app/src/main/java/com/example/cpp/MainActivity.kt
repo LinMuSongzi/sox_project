@@ -11,11 +11,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
+import com.example.cpp.business.SoudSoxBusiness
 import com.psyone.sox.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.musongzi.comment.ExtensionMethod.convertFragment
 import com.musongzi.comment.ExtensionMethod.instance
+import com.musongzi.comment.ExtensionMethod.instanceByVm
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.activity.MszFragmentActivity
 import com.musongzi.core.base.business.itf.WebSocketEngine
@@ -45,9 +47,9 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
         binding = ActivityMainBinding.inflate(layoutInflater)
         setChildMainView(binding.root)
 
-        runOnUiThread {
-            startActivity(Intent(this,WebSocketActivity::class.java))
-        }
+//        runOnUiThread {
+//            startActivity(Intent(this,WebSocketActivity::class.java))
+//        }
 
         Log.i(
             TAG,
@@ -75,7 +77,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                 binding.idPlayText.setOnClickListener {
 
 
-                    exoPlaySImple(this, this, "${BASE_URL}wavTest2.mp3")
+                    exoPlaySImple(this, this, musicPath)
 
 //                    SoudSoxBusiness::class.java.instanceByVm(
 //                        MusicEffectsViewModel::class.java,
@@ -87,8 +89,8 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                     runOnUiThread {
                         MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(
                             this
-                        ) {
-                            binding.chooseBinding.bean = it
+                        ) { bean->
+                            binding.chooseBinding.bean = bean
                         }
                         getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
                         loaderEffectsData()
@@ -132,6 +134,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
         // Used to load the 'cpp' library on application startup.
         private const val TAG = SoxUtil.TAG
         val musicPath =
+//            Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3"
             Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
 

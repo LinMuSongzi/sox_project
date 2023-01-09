@@ -67,7 +67,7 @@ class SoxAudioProcessor : AudioProcessor {
             inputBuffer.get(operateBytes, offset, limite)
             operateBytes = exampleConvertByPcmData(
                 operateBytes,
-                5.toString(),
+                20.toString(),
             )
             val outputByteBuffer = ByteBuffer.allocate(limite)
             outputByteBuffer.put(operateBytes, offset, limite)

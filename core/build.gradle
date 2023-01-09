@@ -98,4 +98,8 @@ dependencies {
     api "androidx.startup:startup-runtime:1.1.0-beta01"
     //noinspection GradleDependency
     api "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+
+
+    api "org.java-websocket:Java-WebSocket:1.4.0"
+
 }

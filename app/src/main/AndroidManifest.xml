@@ -22,7 +22,7 @@
         android:theme="@style/Theme.Cpp"
         android:requestLegacyExternalStorage="true">
         <activity
-            android:name=".WebSocketActivity"
+            android:name=".MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
@@ -45,10 +45,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-
-
-<!--        <activity android:name=".WebSocketActivity"-->霞姐<!--            android:launchMode="singleTask"-->
-<!--            />-->
 
     </application>
 

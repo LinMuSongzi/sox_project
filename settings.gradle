@@ -4,6 +4,9 @@ pluginManagement {
         google()
         jcenter()
         mavenCentral()
+        maven {
+            url "https://developer.huawei.com/repo/"
+        }
     }
 }
 dependencyResolutionManagement {
@@ -12,6 +15,9 @@ dependencyResolutionManagement {
         google()
         jcenter()
         mavenCentral()
+        maven {
+            url "https://developer.huawei.com/repo/"
+        }
     }
 }
 rootProject.name = "cpp"

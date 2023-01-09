@@ -2,7 +2,6 @@ package com.musongzi.core.base.business.itf
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import org.java_websocket.handshake.ServerHandshake
 import java.lang.Exception
 
 interface WebSocketEngine :InstantMessagingBusiness{

@@ -14,10 +14,15 @@ import com.example.cpp.SoxUtil
 import com.psyone.sox.EffectsBean
 import com.example.cpp.data.MusicInfo
 import com.example.cpp.vm.MusicEffectsViewModel.Companion.CHOOSE_EFFECY_KEY
+import com.huawei.hms.audioeditor.sdk.AudioParameters
+import com.huawei.hms.audioeditor.sdk.AudioParameters.*
+import com.huawei.hms.audioeditor.sdk.HAEEqualizerStream
+import com.huawei.hms.audioeditor.sdk.HAEErrorCode
 import com.musongzi.comment.ExtensionMethod.getNextBusiness
 import com.musongzi.comment.ExtensionMethod.getSaveStateValue
 import com.musongzi.core.base.business.BaseMapBusiness
 import com.musongzi.core.base.vm.MszViewModel
+import com.musongzi.core.util.ScreenUtil
 import com.psyone.sox.WavHelp.writeWaveFileHeader
 import okhttp3.internal.notify
 import okhttp3.internal.wait
@@ -36,8 +41,8 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
     //    lateinit var readyWrite: ByteArray
     var audioTrack: AudioTrack? = null
     var inputStreamMethod: (() -> InputStream?)? = null
-    val offset = 44;
-    var headBytes = ByteArray(offset)
+    val offset = 0//44;
+    var headBytes = ByteArray(44)
     val LOCK = Object();
 
 
@@ -95,6 +100,24 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
         lateinit var inputStream: InputStream
 
         /**
+         *     public static final int[] EQUALIZER_CLASSICAL_VALUE;
+        public static final int[] EQUALIZER_JAZZ_VALUE;
+        public static final int[] EQUALIZER_ROCK_VALUE;
+        public static final int[] EQUALIZER_RB_VALUE;
+        public static final int[] EQUALIZER_BALLADS_VALUE;
+        public static final int[] EQUALIZER_DANCE_MUSIC_VALUE;
+        public static final int[] EQUALIZER_CHINESE_STYLE_VALUE;
+         */
+        var arrayTest = arrayOf(
+            EQUALIZER_CLASSICAL_VALUE, EQUALIZER_JAZZ_VALUE, EQUALIZER_ROCK_VALUE, EQUALIZER_RB_VALUE, EQUALIZER_BALLADS_VALUE,
+            EQUALIZER_DANCE_MUSIC_VALUE, EQUALIZER_CHINESE_STYLE_VALUE
+        )
+
+
+        private var hep: HAEEqualizerStream? = null
+
+
+        /**
          * 44 + simplerate * bit * channels / 8
          */
         lateinit var byteRead: ByteArray
@@ -124,25 +147,37 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             var last = System.currentTimeMillis()
 
             while (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED) && business.readSize != -1) {
-                val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
-                ebean?.apply {
-                    if (values == null) {
-                        values = arrayOf("5")
-                    }
-                    val array: Array<String> = values!!
-                    if (System.currentTimeMillis() - last > 1000) {
-                        array[0] = (array[0].toInt() + 5).toString();
-                        if (array[0] == "80") {
-                            array[0] = "10"
-                        }
-                    }
-                }
-                val writeByte = SoxUtil.buildMusicByEffectInfo(
-                    ebean,
-                    byteRead.copyOf()
-                )
+//                val ebean = CHOOSE_EFFECY_KEY.getSaveStateValue<EffectsBean>(business.iAgent)
+//                ebean?.apply {
+//                    if (values == null) {
+//                        values = arrayOf("5")
+//                    }
+//                    val array: Array<String> = values!!
+//                    if (System.currentTimeMillis() - last > 1000) {
+//                        array[0] = (array[0].toInt() + 5).toString();
+//                        if (array[0] == "80") {
+//                            array[0] = "10"
+//                        }
+//                    }
+//                }
+//                val writeByte = SoxUtil.buildMusicByEffectInfo(
+//                    ebean,
+//                    byteRead.copyOf()
+//                )
 
-                business.audioTrack?.write(writeByte, business.offset, writeByte.size-business.offset)
+                if (hep != null) {
+                    Log.i(TAG, "simpleRead222: res          ${byteRead.size}")
+                    byteRead = hep!!.applyPcmData(byteRead)
+                    Log.i(TAG, "simpleRead222: applyPcmData ${byteRead.size}")
+                    if (System.currentTimeMillis() - 5000 > last) {
+                        last = System.currentTimeMillis()
+                        var ran: Int = (Math.random() * arrayTest.size).toInt()
+                        hep?.setEqParams(arrayTest[ran])
+//                        Log.i(TAG, "simpleRead222: index  = $ran")
+                    }
+
+                }
+                business.audioTrack?.write(byteRead, business.offset, byteRead.size - business.offset)
 
                 business.readSize =
                     inputStream.read(byteRead, business.offset, byteRead.size - business.offset)
@@ -209,7 +244,7 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             // SampleRate * Channels * BitsPerSample / 8
             val size = musicInfo.getDataSize() / 10
             val rate = size * 10
-            byteRead = ByteArray(musicInfo.headBitSize + size.toInt())
+            byteRead = ByteArray(size.toInt())//ByteArray(musicInfo.headBitSize + size.toInt())
             writeWaveFileHeader(
                 business.headBytes,
                 size,
@@ -220,6 +255,15 @@ class SoudSoxBusiness : BaseMapBusiness<MszViewModel<*, *>>(), DefaultLifecycleO
             )
             System.arraycopy(business.headBytes, 0, byteRead, 0, business.offset)
             business.readSize = musicInfo.headBitSize
+
+            if (hep == null) {
+                val hep = HAEEqualizerStream()
+                hep.setEqParams(AudioParameters.EQUALIZER_CLASSICAL_VALUE)
+                val re = hep.setAudioFormat(16, musicInfo.channel, musicInfo.simpleRate)
+                if (re == HAEErrorCode.SUCCESS) {
+                    this.hep = hep;
+                }
+            }
         }
 
 

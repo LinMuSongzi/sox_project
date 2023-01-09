@@ -15,13 +15,11 @@ object SoxUtil {
     val FILE_PARENT = ActivityThreadHelp.getCurrentApplication().cacheDir
     val FILE_MP3 = File(FILE_PARENT, "qsws.wav")
 
-    @Nullable
     fun buildMusicByEffectInfo(effectsBean: EffectsBean?, byteArray: ByteArray):ByteArray{
        return buildMusicByEffectInfo(effectsBean?.r_name,effectsBean?.values?.get(0),byteArray)
     }
 
     @JvmStatic
-    @Nullable
     external fun buildMusicByEffectInfo(effectRealName: String?,values: String?,byteArray: ByteArray):ByteArray
 
     @Nullable

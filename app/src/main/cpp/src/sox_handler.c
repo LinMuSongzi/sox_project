@@ -42,15 +42,15 @@ Java_com_psyone_sox_SoxProgramHandler_exampleConvertByPcmData(JNIEnv *env, jclas
     assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
     free(e);
 
-    //2
-//    if (value != NULL) {
-//        e = sox_create_effect(sox_find_effect("bass"));
-//        args[0] = (*env)->GetStringUTFChars(env, value, 0);
-//        assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
-//        //增加效果到效果链
-//        assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
-//        free(e);
-//    }
+//    2;
+    if (value != NULL) {
+        e = sox_create_effect(sox_find_effect("bass"));
+        args[0] = (*env)->GetStringUTFChars(env, value, 0);
+        assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+        //增加效果到效果链
+        assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+        free(e);
+    }
 
 
 
