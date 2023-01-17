@@ -58,7 +58,7 @@ object SoxProgramHandler {
                      * 设置SoxAudioProcessor
                      * 处理音频数据
                      */
-                    .setAudioProcessors(arrayOf(SoxAudioProcessor()))
+                    .setAudioProcessors(arrayOf(NewHandlerSoxAudioProcessor()))
                     .setOffloadMode(
                         if (enableOffload) DefaultAudioSink.OFFLOAD_MODE_ENABLED_GAPLESS_REQUIRED else DefaultAudioSink.OFFLOAD_MODE_DISABLED
                     )

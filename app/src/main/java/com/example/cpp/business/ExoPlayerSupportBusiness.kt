@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.audio.*
 import com.musongzi.core.base.business.BaseMapBusiness
 import com.musongzi.core.itf.IHodlerReentrantLock
 import com.musongzi.core.itf.ILifeObject
+import com.psyone.sox.NewHandlerSoxAudioProcessor
 import com.psyone.sox.SoxAudioProcessor
 import io.reactivex.rxjava3.core.Observable
 import java.util.concurrent.ExecutorService
@@ -80,7 +81,7 @@ class ExoPlayerSupportBusiness : BaseMapBusiness<ILifeObject>(),
                         .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
                         .setOffloadMode(
                             if (enableOffload) DefaultAudioSink.OFFLOAD_MODE_ENABLED_GAPLESS_REQUIRED else DefaultAudioSink.OFFLOAD_MODE_DISABLED
-                        ).setAudioProcessors(arrayOf(SoxAudioProcessor()))
+                        ).setAudioProcessors(arrayOf(NewHandlerSoxAudioProcessor()))
                         .build()
                 }
 

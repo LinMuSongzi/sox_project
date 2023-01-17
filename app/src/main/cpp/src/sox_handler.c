@@ -42,52 +42,21 @@ Java_com_psyone_sox_SoxProgramHandler_exampleConvertByPcmData(JNIEnv *env, jclas
     assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
     free(e);
 
-//    2;
-    if (value != NULL) {
-        e = sox_create_effect(sox_find_effect("bass"));
-        args[0] = (*env)->GetStringUTFChars(env, value, 0);
-        assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
-        //增加效果到效果链
-        assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
-        free(e);
-    }
-
-
-
-//    e = sox_create_effect(sox_find_effect("reverb"));
-////是否纯湿声
-//    char* wetOnle = "-w";
-////混响大小，高频阻尼，房间大小
-//    char* reverbrance = "30";
-//    char* hfDamping = "30";
-//    char* roomScale = "50";
-////立体声深度，早反射声，及湿声增益，代码如下：
-////    char* stereoDepth = "30";
-////    char* preDelay = "30";
-////    char* wetGain = "0";
-//    char* args2[] = {wetOnle,reverbrance,hfDamping,roomScale};
-//    assert(sox_effect_options(e,2,args2) == SOX_SUCCESS);
+//    e = sox_create_effect(sox_find_effect("bass"));
+//    args[0] = (*env)->GetStringUTFChars(env, value, 0);
+//    assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+//    //增加效果到效果链
 //    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
 //    free(e);
 
 
-//    e = sox_create_effect(sox_find_effect("equalizer"));
-////中心频率，频宽，增益
-//    char* frequency = "400";
-//    char* bandWidth = "1.25q";
-//    char* gain = "4db";
-//    char* args3[] = {frequency};
-//    assert(sox_effect_options(e,1,args3)== SOX_SUCCESS);
+//    e = sox_create_effect(sox_find_effect("trim"));
+//    args[0] = "10", assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
 //    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
 //    free(e);
 
 
 
-    e = sox_create_effect(sox_find_effect("vol"));
-    args[0] = "5dB", assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
-    /* Add the effect to the end of the effects processing chain: */
-    assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
-    free(e);
 
     e = sox_create_effect(sox_find_effect("output"));
     args[0] = (char *) out, assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);

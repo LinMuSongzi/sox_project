@@ -45,35 +45,36 @@ class SoxAudioProcessor : AudioProcessor {
 
     override fun queueInput(inputBuffer: ByteBuffer) {
         if (inputBuffer.hasRemaining()) {
-            val limite = inputBuffer.limit()
-            var operateBytes = this.operateBytes
-            if (operateBytes == null) {
-                operateBytes = ByteArray(offset + limite)
-                val byteRate = format.sampleRate * 16 * format.channelCount / 8
-                Log.i(TAG, "queueInput: operateBytes = ${operateBytes.size} , byteRate = $byteRate , limite = $limite")
-                writeWaveFileHeader(
-                    operateBytes,
-                    limite.toLong(),
-                    (limite + offset).toLong(), format.sampleRate, format.channelCount, byteRate
-                )
-                this.operateBytes = operateBytes
-            } else if (limite != lastLimite) {
-                Log.i(TAG, "queueInput: $limite != $lastLimite")
-                this.operateBytes = null
-                queueInput(inputBuffer)
-                return
-            }
+            val limite = inputBuffer.remaining()
 
-            inputBuffer.get(operateBytes, offset, limite)
-            operateBytes = exampleConvertByPcmData(
-                operateBytes,
-                20.toString(),
-            )
-            val outputByteBuffer = ByteBuffer.allocate(limite)
-            outputByteBuffer.put(operateBytes, offset, limite)
-            outputByteBuffer.flip()
-            this.outputByteBuffer = outputByteBuffer
-            this.lastLimite = limite
+//            var operateBytes = this.operateBytes
+//            if (operateBytes == null) {
+//                operateBytes = ByteArray(offset + limite)
+//                val byteRate = format.sampleRate * 16 * format.channelCount / 8
+//                Log.i(TAG, "queueInput: operateBytes = ${operateBytes.size} , byteRate = $byteRate , limite = $limite")
+//                writeWaveFileHeader(
+//                    operateBytes,
+//                    limite.toLong(),
+//                    (limite + offset).toLong(), format.sampleRate, format.channelCount, byteRate
+//                )
+//                this.operateBytes = operateBytes
+//            } else if (limite != lastLimite) {
+//                Log.i(TAG, "queueInput: $limite != $lastLimite")
+//                this.operateBytes = null
+//                queueInput(inputBuffer)
+//                return
+//            }
+//
+//            inputBuffer.get(operateBytes, offset, limite)
+//            operateBytes = exampleConvertByPcmData(
+//                operateBytes,
+//                20.toString(),
+//            )
+//            val outputByteBuffer = ByteBuffer.allocate(limite)
+//            outputByteBuffer.put(operateBytes, offset, limite)
+//            outputByteBuffer.flip()
+//            this.outputByteBuffer = outputByteBuffer
+//            this.lastLimite = limite
         }
     }
 
