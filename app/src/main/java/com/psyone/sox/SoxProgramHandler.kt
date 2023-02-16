@@ -12,6 +12,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.audio.AudioCapabilities
+import com.google.android.exoplayer2.audio.AudioProcessor
 import com.google.android.exoplayer2.audio.AudioSink
 import com.google.android.exoplayer2.audio.DefaultAudioSink
 
@@ -27,12 +28,17 @@ object SoxProgramHandler {
     external fun exampleConvertByPcmData(byteArray: ByteArray, values: String?): ByteArray
 
 
+    @JvmStatic
+    external fun exampleConvertByPcmData2(byteArray: ByteArray, musicEffecyBean: EffectsBean?, simpleRate: Int, channel: Int, bit: Int): ByteArray
+
+
     @RequiresApi(Build.VERSION_CODES.M)
     fun exoPlaySImple(
         context: Context,
         lifecycleOwner: LifecycleOwner,
         //请填写本地/网络的 wav文件
-        path: String?
+        path: String?,
+        audioProcessor: AudioProcessor
     ): Player? {
 
 //        var ouputPlayFile: File? = null
@@ -58,7 +64,7 @@ object SoxProgramHandler {
                      * 设置SoxAudioProcessor
                      * 处理音频数据
                      */
-                    .setAudioProcessors(arrayOf(NewHandlerSoxAudioProcessor()))
+                    .setAudioProcessors(arrayOf(audioProcessor))
                     .setOffloadMode(
                         if (enableOffload) DefaultAudioSink.OFFLOAD_MODE_ENABLED_GAPLESS_REQUIRED else DefaultAudioSink.OFFLOAD_MODE_DISABLED
                     )
@@ -531,7 +537,7 @@ object SoxProgramHandler {
         operateEffectsValue: Array<Array<String>?>?
     ): Int
 
-    external fun changeEffects(operateEffects: Array<String>?, operateEffectsValue: Array<Array<String>?>?):Int
+    external fun changeEffects(operateEffects: Array<String>?, operateEffectsValue: Array<Array<String>?>?): Int
 
     external fun queueChangeInput(
         context: Int,

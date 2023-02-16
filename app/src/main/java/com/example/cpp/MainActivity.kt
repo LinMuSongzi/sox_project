@@ -9,21 +9,27 @@ import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
 import com.example.cpp.business.SoudSoxBusiness
 import com.psyone.sox.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.vm.MusicEffectsViewModel
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.audio.AudioProcessor
 import com.musongzi.comment.ExtensionMethod.convertFragment
 import com.musongzi.comment.ExtensionMethod.instance
 import com.musongzi.comment.ExtensionMethod.instanceByVm
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
+import com.musongzi.comment.ExtensionMethod.saveStateChange
 import com.musongzi.comment.activity.MszFragmentActivity
 import com.musongzi.core.base.business.itf.WebSocketEngine
 import com.musongzi.core.base.map.LocalSavedHandler
 import com.musongzi.core.itf.INotifyDataSetChanged
 import com.musongzi.core.itf.ISaveStateHandle
+import com.psyone.sox.NewHandlerSoxAudioProcessor
 import com.psyone.sox.SoxProgramHandler
 import com.psyone.sox.SoxProgramHandler.exoPlaySImple
 import org.java_websocket.client.WebSocketClient
@@ -33,11 +39,11 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     ISaveStateHandle by LocalSavedHandler() {
 
 
+    private val mNewHandlerSoxAudioProcessor = NewHandlerSoxAudioProcessor()
+    private var player: Player? = null
     private lateinit var binding: ActivityMainBinding
-//    var soxBusiness: SoudSoxBusiness? = null
 
     var fragment: Fragment? = null
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,30 +76,33 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                 if (SoxUtil.FILE_MP3.exists()) {
                     SoxUtil.FILE_MP3.delete()
                 }
-//                binding.idBuildMusicText.setOnClickListener {
-//
-//                }
+                binding.idBuildMusicText.setOnClickListener {
+                    mNewHandlerSoxAudioProcessor.musicEffecyBean = null
+                }
 
                 binding.idPlayText.setOnClickListener {
-
-
-                    exoPlaySImple(this, this, musicPath)
-
-//                    SoudSoxBusiness::class.java.instanceByVm(
-//                        MusicEffectsViewModel::class.java,
-//                        business.topViewModelProvider()
-//                    )?.observer(musicPath)
+                    val p: Player = player ?: exoPlaySImple(this, this, 千山万水_mp3, mNewHandlerSoxAudioProcessor)!!
+                    if (player == null) {
+                        player = p
+                    } else if (p.isPlaying) {
+                        p.pause()
+                    } else {
+                        p.play()
+                    }
                 }
 
                 MusicEffectsViewModel::class.java.instance(business.topViewModelProvider())?.apply {
                     runOnUiThread {
-                        MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean>(
+                        MusicEffectsViewModel.CHOOSE_EFFECY_KEY.liveSaveStateObserver<EffectsBean?>(
                             this
-                        ) { bean->
-                            binding.chooseBinding.bean = bean
+                        ) { bean ->
+                            bean?.apply {
+                                binding.chooseBinding.bean = this
+                            }
+                            mNewHandlerSoxAudioProcessor.musicEffecyBean = bean
                         }
                         getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
-                        loaderEffectsData()
+                        loaderEffectsData();
                     }
                 }
 
@@ -101,13 +110,16 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
             }
         }
         launch.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+
     }
+
 
     private fun showFragmentByte() {
         if (fragment == null) {
             binding.idByteLayout.visibility = View.VISIBLE
             fragment = ByteArrayEngine::class.java.convertFragment(Bundle().apply {
-                putString(PATH_KEY, musicPath)
+                putString(PATH_KEY, 千山万水_mp3)
             })
             supportFragmentManager.beginTransaction().replace(
                 R.id.id_byte_layout,
@@ -133,8 +145,9 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     companion object {
         // Used to load the 'cpp' library on application startup.
         private const val TAG = SoxUtil.TAG
-        val musicPath =
-            Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3"
+        val 千山万水_mp3 = "file:///android_asset/" + "千山万水.mp3"
+        val dnsRXV0SUH6ASVysADygTuw80Ak462_wav = "file:///android_asset/" + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
+        //Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3"
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
 
