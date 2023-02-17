@@ -17,6 +17,7 @@ class NewHandlerSoxAudioProcessor : BaseAudioProcessor() {
         const val TAG = "NewHandlerSoxAudio"
     }
 
+    var isNativeMusic = true
     private var inputAudioFormat: AudioFormat? = null
 
     var musicEffecyBean: EffectsBean? = null
@@ -30,7 +31,7 @@ class NewHandlerSoxAudioProcessor : BaseAudioProcessor() {
 
     override fun queueInput(inputBuffer: ByteBuffer) {
 
-        if (!inputBuffer.hasRemaining() || inputAudioFormat == null) {
+        if (!inputBuffer.hasRemaining()) {
             return
         }
         val format = inputAudioFormat
@@ -43,9 +44,15 @@ class NewHandlerSoxAudioProcessor : BaseAudioProcessor() {
         }
 
         writeWaveFileHeader(readByte, length, length + 44, format.sampleRate, format.channelCount, format.sampleRate * 16 * format.channelCount / 8)
-        readByte = exampleConvertByPcmData(readByte,if(musicEffecyBean != null) 20.toString() else null)
+        readByte = if (isNativeMusic) {
+            Log.i(TAG, "queueInput: 原声 = " + readByte.size)
+            exampleConvertByPcmData(readByte, null)
+        } else {
+            Log.i(TAG, "queueInput: 不是原声 = " + readByte.size)
+            exampleConvertByPcmData2(readByte, musicEffecyBean = musicEffecyBean, simpleRate = format.sampleRate, format.channelCount, 16)
+        }
 //        readByte = exampleConvertByPcmData2(readByte, musicEffecyBean,format.sampleRate,format.channelCount,16)
-        Log.i(TAG, "queueInput: 处理后的 readByte = " + readByte.size)
+
 
         val newSize = readByte.size;
         replaceOutputBuffer(newSize - 44).apply {

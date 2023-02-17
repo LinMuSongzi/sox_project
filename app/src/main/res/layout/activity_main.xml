@@ -27,9 +27,9 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
 
@@ -39,45 +39,72 @@
                     android:id="@+id/id_this_choose_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="15dp"
+                    android:text="当前选择的是："
                     android:textColor="@color/text_color_unSelect"
-                    android:text="当前选择的是："/>
+                    android:textSize="15dp" />
 
-                <include android:id="@+id/choose_binding" layout="@layout/adapter_effects_detial" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                    <include
+                        android:id="@+id/choose_binding"
+                        layout="@layout/adapter_effects_detial" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/id_play_RecyclerView"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+
+                        />
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <Button
                 android:id="@+id/id_build_music_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="构建music"
+                tools:text="当前为原声"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toRightOf="@+id/id_play_text"
                 app:layout_constraintTop_toTopOf="parent" />
+
+<!--            <Button-->
+<!--                android:id="@+id/id_build_music_text"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="当前为原声"-->
+<!--                app:rile="parent"-->
+<!--                app:layout_constraintLeft_toRightOf="@+id/id_play_text"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
-            android:visibility="gone"
             android:id="@+id/id_byte_layout"
             android:layout_width="match_parent"
-            android:layout_height="500dp"/>
+            android:layout_height="500dp"
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:textSize="18dp"
-            android:paddingVertical="10dp"
-            android:paddingHorizontal="10dp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color_select"
             android:layout_height="wrap_content"
-            android:text="更多选项"/>
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="10dp"
+            android:text="更多选项"
+            android:textColor="@color/text_color_select"
+            android:textSize="18dp"
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/id_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:paddingHorizontal="10dp"
             android:layout_weight="1"
+            android:paddingHorizontal="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

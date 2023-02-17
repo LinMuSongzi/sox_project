@@ -13,6 +13,8 @@ public class FileBean extends BaseItemBeanImpl {
     }
 
 
+
+
     public FileBean(FileBean fileBean){
         path = fileBean.path;
     }

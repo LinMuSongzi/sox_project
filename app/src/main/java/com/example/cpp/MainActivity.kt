@@ -2,38 +2,35 @@ package com.example.cpp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
-import com.example.cpp.business.SoudSoxBusiness
 import com.psyone.sox.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
+import com.example.cpp.databinding.AdapterByteShowBinding
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.audio.AudioProcessor
 import com.musongzi.comment.ExtensionMethod.convertFragment
 import com.musongzi.comment.ExtensionMethod.instance
-import com.musongzi.comment.ExtensionMethod.instanceByVm
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
-import com.musongzi.comment.ExtensionMethod.saveStateChange
 import com.musongzi.comment.activity.MszFragmentActivity
-import com.musongzi.core.base.business.itf.WebSocketEngine
+import com.musongzi.comment.bean.FileBean
+import com.musongzi.comment.util.setText
+import com.musongzi.core.ExtensionCoreMethod.adapter
+import com.musongzi.core.ExtensionCoreMethod.linearLayoutManager
 import com.musongzi.core.base.map.LocalSavedHandler
 import com.musongzi.core.itf.INotifyDataSetChanged
 import com.musongzi.core.itf.ISaveStateHandle
+import com.musongzi.core.itf.page.ISource
 import com.psyone.sox.NewHandlerSoxAudioProcessor
 import com.psyone.sox.SoxProgramHandler
 import com.psyone.sox.SoxProgramHandler.exoPlaySImple
-import org.java_websocket.client.WebSocketClient
-import java.io.File
 
 class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     ISaveStateHandle by LocalSavedHandler() {
@@ -43,7 +40,61 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     private var player: Player? = null
     private lateinit var binding: ActivityMainBinding
 
+    private val modeLiveData = MutableLiveData(0)
+
     var fragment: Fragment? = null
+
+    private var playMusicPosition: Int = -1
+        set(value) {
+            playMusic(field, value)
+            if(field != value){
+                runOnUiThread {
+                    notifyDataSetChanged()
+                }
+            }
+            field = value
+
+        }
+
+    private fun playMusic(last: Int, newMusic: Int) {
+        Log.i(TAG, "playMusic: last = $last , newMusic = $newMusic")
+
+
+
+        val p: Player = player ?: exoPlaySImple(this, this, list.realData()[newMusic].path, mNewHandlerSoxAudioProcessor)!!
+        if (player == null) {
+            player = p
+        }else {
+            if(last == newMusic){
+                if (player?.isPlaying == true) {
+                    player?.pause()
+                } else {
+                    player?.play()
+                }
+                return
+            }
+            player?.apply {
+                pause()
+                stop()
+                release()
+            }
+            player = null
+            playMusic(last,newMusic)
+        }
+
+
+    }
+
+    private val list = object : ISource<FileBean> {
+
+        val list = mutableListOf<FileBean>().apply {
+            add(FileBean(千山万水_mp3))
+            add(FileBean(dnsRXV0SUH6ASVysADygTuw80Ak462_wav))
+        }
+
+        override fun realData() = list
+
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,9 +104,24 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
         binding = ActivityMainBinding.inflate(layoutInflater)
         setChildMainView(binding.root)
 
-//        runOnUiThread {
-//            startActivity(Intent(this,WebSocketActivity::class.java))
-//        }
+
+        binding.idPlayRecyclerView.linearLayoutManager {
+            list.adapter(AdapterByteShowBinding::class.java, { d, i, p ->
+                setText(d.idText, i.path)
+
+                if (p == playMusicPosition) {
+                    d.idText.setTextColor(Color.RED)
+                } else {
+                    d.idText.setTextColor(Color.parseColor("#999999"))
+                }
+                d.root.setOnClickListener {
+                    Log.i(TAG, "playMusicPosition: $p")
+                    playMusicPosition = p
+
+
+                }
+            }, false)
+        }
 
         Log.i(
             TAG,
@@ -77,17 +143,17 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                     SoxUtil.FILE_MP3.delete()
                 }
                 binding.idBuildMusicText.setOnClickListener {
-                    mNewHandlerSoxAudioProcessor.musicEffecyBean = null
+//                    mNewHandlerSoxAudioProcessor.musicEffecyBean = null
+                    if(modeLiveData.value == 0){
+                        modeLiveData.value = 1
+                    }else{
+                        modeLiveData.value = 0
+                    }
                 }
 
                 binding.idPlayText.setOnClickListener {
-                    val p: Player = player ?: exoPlaySImple(this, this, 千山万水_mp3, mNewHandlerSoxAudioProcessor)!!
-                    if (player == null) {
-                        player = p
-                    } else if (p.isPlaying) {
-                        p.pause()
-                    } else {
-                        p.play()
+                    if (list.realData().isNotEmpty()) {
+                        playMusicPosition = 0
                     }
                 }
 
@@ -112,6 +178,16 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
         launch.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
 
+        modeLiveData.observe(this){
+            if(it == 0){
+                binding.idBuildMusicText.text = "当前为原声"
+            }else if(it == 1){
+                binding.idBuildMusicText.text = "处理后声音"
+            }
+        }
+        modeLiveData.observe(this){
+            mNewHandlerSoxAudioProcessor.isNativeMusic = it == 0
+        }
     }
 
 
@@ -156,6 +232,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
 
     @SuppressLint("NotifyDataSetChanged")
     override fun notifyDataSetChanged() {
+        binding.idPlayRecyclerView.adapter?.notifyDataSetChanged()
         binding.idRecyclerView.adapter?.notifyDataSetChanged()
     }
 
