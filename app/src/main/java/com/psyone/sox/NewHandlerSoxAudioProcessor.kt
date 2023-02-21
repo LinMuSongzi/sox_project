@@ -51,8 +51,8 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
             exampleConvertByPcmData(readByte, null)
         } else {
             Log.i(TAG, "queueInput: 不是原声 = $euqInfo")
-            exampleConvertByPcmData(readByte, null)
-//            exampleConvertByPcmData2(readByte, info = euqInfo, simpleRate = format.sampleRate, channel = format.channelCount, bit = 16)
+//            exampleConvertByPcmData(readByte, null)
+            exampleConvertByPcmData2(readByte, info = euqInfo, simpleRate = format.sampleRate, channel = format.channelCount, bit = 16)
         }
 //        readByte = exampleConvertByPcmData2(readByte, musicEffecyBean,format.sampleRate,format.channelCount,16)
 

@@ -116,7 +116,7 @@ Java_com_psyone_sox_SoxProgramHandler_createAudioWorkConetxt(JNIEnv *env, jobjec
 JNIEXPORT jbyteArray JNICALL
 Java_com_psyone_sox_SoxProgramHandler_exampleConvertByPcmData2(JNIEnv *env, jclass clazz,
                                                                jbyteArray byte_array,
-                                                               jobject music_effecy_bean,
+                                                               jint type,jstring v1,jstring v2,jstring v3,jstring v4,
                                                                jint simple_rate, jint channel,
                                                                jint bit) {
     int init_size2 = (*env)->GetArrayLength(env, byte_array);
@@ -153,14 +153,14 @@ Java_com_psyone_sox_SoxProgramHandler_exampleConvertByPcmData2(JNIEnv *env, jcla
     free(e);
 
 
-    if( music_effecy_bean != NULL) {
-        e = sox_create_effect(sox_find_effect("bass"));
-        args[0] = (*env)->GetStringUTFChars(env, "10", 0);
-        assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
-        //增加效果到效果链
-        assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
-        free(e);
-    }
+//    if( type != -1) {
+//        e = sox_create_effect(sox_find_effect("bass"));
+//        args[0] = (*env)->GetStringUTFChars(env, "10", 0);
+//        assert(sox_effect_options(e, 1, args) == SOX_SUCCESS);
+//        //增加效果到效果链
+//        assert(sox_add_effect(chain, e, &in->signal, &in->signal) == SOX_SUCCESS);
+//        free(e);
+//    }
 
 
 //    e = sox_create_effect(sox_find_effect("trim"));

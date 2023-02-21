@@ -31,15 +31,16 @@ object SoxProgramHandler {
 
 
     fun exampleConvertByPcmData2(byteArray: ByteArray, info: EuqInfo?, simpleRate: Int, channel: Int, bit: Int) =
-        exampleConvertByPcmData2(byteArray, info?.type, info?.value1, info?.value2, info?.value3, simpleRate, channel, bit)
+        exampleConvertByPcmData2(byteArray, info?.type?.toInt() ?: -1, info?.value1, info?.value2, info?.value3,info?.value4, simpleRate, channel, bit)
 
     @JvmStatic
     external fun exampleConvertByPcmData2(
         byteArray: ByteArray,
-        type: String?,
+        type: Int,
         v1: String?,
         v2: String?,
         v3: String?,
+        v4: String?,
         simpleRate: Int,
         channel: Int,
         bit: Int

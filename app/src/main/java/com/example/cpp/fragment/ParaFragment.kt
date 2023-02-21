@@ -51,23 +51,21 @@ class ParaFragment : DialogFragment(), IHolderViewModelProvider, IEquBusiness {
             || databinding.idValue3.text.isEmpty()
             || databinding.idTitle.text.isEmpty()
         ) {
-
-
             Toast.makeText(requireContext(), "请输入完整参数", Toast.LENGTH_SHORT).show()
-
         } else {
             mViewModel?.euqInfoThis?.value = EuqInfo(
                 databinding.idTitle.text.toString(),
                 databinding.idValue1.text.toString(),
                 databinding.idValue2.text.toString(),
-                databinding.idValue3.text.toString()
+                databinding.idValue3.text.toString(),
+                databinding.idValue4.text.toString()
             )
             dismissAllowingStateLoss()
         }
     }
 
     override fun resetClick() {
-        databinding.bean = EuqInfo("","","","")
+        databinding.bean = EuqInfo("","","","","")
     }
 
 

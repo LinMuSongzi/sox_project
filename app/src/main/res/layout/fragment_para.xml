@@ -26,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="请输入你的类型"
+            android:inputType="number"
             android:textColor="#333333"
             android:textColorHint="#999999" />
 
@@ -55,6 +56,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="请输入你的第3个参数"
+            android:textColor="#333333"
+            android:textColorHint="#999999"
+            android:textSize="12dp" />
+
+
+        <EditText
+            android:id="@+id/id_value4"
+            setTextNormal="@{bean.value4}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入你的第4个参数,可以为空"
             android:textColor="#333333"
             android:textColorHint="#999999"
             android:textSize="12dp" />
