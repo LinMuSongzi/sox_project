@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="bean"
+            type="com.example.cpp.data.EuqInfo" />
+
+        <variable
+            name="business"
+            type="com.example.cpp.business.IEquBusiness" />
+
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="10dp"
+        android:orientation="vertical">
+
+
+        <EditText
+            android:id="@+id/id_title"
+            setTextNormal="@{bean.type}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入你的类型"
+            android:textColor="#333333"
+            android:textColorHint="#999999" />
+
+        <EditText
+            android:id="@+id/id_value1"
+            setTextNormal="@{bean.value1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入你的第1个参数"
+            android:textColor="#333333"
+            android:textColorHint="#999999"
+            android:textSize="12dp" />
+
+        <EditText
+            android:id="@+id/id_value2"
+            setTextNormal="@{bean.value2}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入你的第2个参数"
+            android:textColor="#333333"
+            android:textColorHint="#999999"
+            android:textSize="12dp" />
+
+        <EditText
+            android:id="@+id/id_value3"
+            setTextNormal="@{bean.value3}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入你的第3个参数"
+            android:textColor="#333333"
+            android:textColorHint="#999999"
+            android:textSize="12dp" />
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="50dp"
+            android:onClick="@{()->business.agreeClick()}"
+            android:text="确定" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="50dp"
+            android:onClick="@{()->business.resetClick()}"
+
+            android:text="重置" />
+
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

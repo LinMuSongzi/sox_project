@@ -14,6 +14,7 @@ import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
 import com.psyone.sox.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.databinding.AdapterByteShowBinding
+import com.example.cpp.fragment.ParaFragment
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.google.android.exoplayer2.Player
 import com.musongzi.comment.ExtensionMethod.convertFragment
@@ -36,6 +37,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     ISaveStateHandle by LocalSavedHandler() {
 
 
+    private val PARA_TAG_F: String = "ParaFragment"
     private val mNewHandlerSoxAudioProcessor = NewHandlerSoxAudioProcessor()
     private var player: Player? = null
     private lateinit var binding: ActivityMainBinding
@@ -47,7 +49,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     private var playMusicPosition: Int = -1
         set(value) {
             playMusic(field, value)
-            if(field != value){
+            if (field != value) {
                 runOnUiThread {
                     notifyDataSetChanged()
                 }
@@ -60,12 +62,11 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
         Log.i(TAG, "playMusic: last = $last , newMusic = $newMusic")
 
 
-
         val p: Player = player ?: exoPlaySImple(this, this, list.realData()[newMusic].path, mNewHandlerSoxAudioProcessor)!!
         if (player == null) {
             player = p
-        }else {
-            if(last == newMusic){
+        } else {
+            if (last == newMusic) {
                 if (player?.isPlaying == true) {
                     player?.pause()
                 } else {
@@ -79,7 +80,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                 release()
             }
             player = null
-            playMusic(last,newMusic)
+            playMusic(last, newMusic)
         }
 
 
@@ -144,9 +145,9 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                 }
                 binding.idBuildMusicText.setOnClickListener {
 //                    mNewHandlerSoxAudioProcessor.musicEffecyBean = null
-                    if(modeLiveData.value == 0){
+                    if (modeLiveData.value == 0) {
                         modeLiveData.value = 1
-                    }else{
+                    } else {
                         modeLiveData.value = 0
                     }
                 }
@@ -170,22 +171,38 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                         getHolderBusiness().buildRecycleMusicEffectsData(binding.idRecyclerView)
                         loaderEffectsData();
                     }
+
+                    euqInfoThis.observe(this@MainActivity) { info ->
+
+                        info?.apply {
+                            mNewHandlerSoxAudioProcessor.euqInfo = this
+                        }
+                    }
+
+
+                }
+
+
+                binding.idSetParaBtn.setOnClickListener {
+                    ParaFragment().show(supportFragmentManager, PARA_TAG_F)
                 }
 
 
             }
+
+
         }
         launch.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
 
-        modeLiveData.observe(this){
-            if(it == 0){
+        modeLiveData.observe(this) {
+            if (it == 0) {
                 binding.idBuildMusicText.text = "当前为原声"
-            }else if(it == 1){
+            } else if (it == 1) {
                 binding.idBuildMusicText.text = "处理后声音"
             }
         }
-        modeLiveData.observe(this){
+        modeLiveData.observe(this) {
             mNewHandlerSoxAudioProcessor.isNativeMusic = it == 0
         }
     }

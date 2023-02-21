@@ -2,9 +2,13 @@ package com.example.cpp.vm
 
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.EditorInfo
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cpp.api.Api
 import com.example.cpp.business.MusicEffectsBusiness
+import com.example.cpp.data.EuqInfo
 import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
 import com.musongzi.comment.viewmodel.ApiViewModel
 import com.musongzi.core.ExtensionCoreMethod.sub
@@ -20,15 +24,17 @@ class MusicEffectsViewModel : ApiViewModel<INotifyDataSetChanged, MusicEffectsBu
     }
 
 
+    var euqInfoThis = MutableLiveData<EuqInfo?>()
+
     fun loaderEffectsData() {
 //        getApi().effects.sub { ef ->
 
-            (getHolderBusiness().realData() as? ArrayList)?.let {
+        (getHolderBusiness().realData() as? ArrayList)?.let {
 //                Log.i(TAG, "loaderEffectsData: ${ef.data?.get(0)?.cName}")
-                it.clear()
-                it.addAll(EFFECTS_ARRAY)
-                getHolderClient()
-            }?.notifyDataSetChanged()
+            it.clear()
+            it.addAll(EFFECTS_ARRAY)
+            getHolderClient()
+        }?.notifyDataSetChanged()
 //        }
 
 //        (getHolderBusiness().realData() as? ArrayList)?.let {

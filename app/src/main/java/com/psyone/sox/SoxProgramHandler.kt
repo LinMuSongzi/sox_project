@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.example.cpp.data.EuqInfo
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -29,8 +30,20 @@ object SoxProgramHandler {
     external fun exampleConvertByPcmData(byteArray: ByteArray, values: String?): ByteArray
 
 
+    fun exampleConvertByPcmData2(byteArray: ByteArray, info: EuqInfo?, simpleRate: Int, channel: Int, bit: Int) =
+        exampleConvertByPcmData2(byteArray, info?.type, info?.value1, info?.value2, info?.value3, simpleRate, channel, bit)
+
     @JvmStatic
-    external fun exampleConvertByPcmData2(byteArray: ByteArray, musicEffecyBean: EffectsBean?, simpleRate: Int, channel: Int, bit: Int): ByteArray
+    external fun exampleConvertByPcmData2(
+        byteArray: ByteArray,
+        type: String?,
+        v1: String?,
+        v2: String?,
+        v3: String?,
+        simpleRate: Int,
+        channel: Int,
+        bit: Int
+    ): ByteArray
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -74,7 +87,7 @@ object SoxProgramHandler {
         }).build()
 
 //        Log.i(TAG, "exoPlaySImple: $path")
-        for(p in paths) {
+        for (p in paths) {
             player.setMediaItem(MediaItem.fromUri(p.path))
         }
 
@@ -137,7 +150,7 @@ object SoxProgramHandler {
 
 //        Log.i(TAG, "exoPlaySImple: $path")
 //        for(p in paths) {
-            player.setMediaItem(MediaItem.fromUri(paths))
+        player.setMediaItem(MediaItem.fromUri(paths))
 //        }
 
         //4.当Player处于STATE_READY状态时，进行播放
