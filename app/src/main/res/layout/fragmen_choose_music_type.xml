@@ -16,10 +16,11 @@
         <EditText
             android:id="@+id/id_edit_et"
             android:layout_width="match_parent"
-            android:singleLine="true"
-
             android:layout_height="wrap_content"
-            android:hint="请输入您的自己定义类型" />
+            android:hint="请输入您的自己定义类型"
+
+            android:inputType="number"
+            android:singleLine="true" />
 
 
         <Button

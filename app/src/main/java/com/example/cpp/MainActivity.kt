@@ -129,15 +129,15 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
             }, false)
         }
 
-        Log.i(
-            TAG,
-            "onCreate: createAudioWorkConetxt = ${
-                SoxProgramHandler.createAudioWorkConetxt(
-                    this,
-                    0
-                )
-            }"
-        )
+//        Log.i(
+//            TAG,
+//            "onCreate: createAudioWorkConetxt = ${
+//                SoxProgramHandler.createAudioWorkConetxt(
+//                    this,
+//                    0
+//                )
+//            }"
+//        )
 
         binding.idPlayText.text =
             "exo播放音乐"//SoxUtil.subtraction(4321, 1234).toString()//stringFromJNI()

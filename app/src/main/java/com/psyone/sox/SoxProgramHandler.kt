@@ -30,8 +30,8 @@ object SoxProgramHandler {
     external fun exampleConvertByPcmData(byteArray: ByteArray, values: String?): ByteArray
 
 
-    fun exampleConvertByPcmData2(byteArray: ByteArray, info: EuqInfo?, simpleRate: Int, channel: Int, bit: Int) =
-        exampleConvertByPcmData2(byteArray, info?.type?.toInt() ?: -1, info?.value1, info?.value2, info?.value3,info?.value4, simpleRate, channel, bit)
+//    fun exampleConvertByPcmData2(byteArray: ByteArray, info: EuqInfo?, simpleRate: Int, channel: Int, bit: Int) =
+//        exampleConvertByPcmData2(byteArray, info?.type?.toInt() ?: -1, info?.value1, info?.value2, info?.value3,info?.value4, simpleRate, channel, bit)
 
 
 //    fun exampleConvertByPcmData3(byteArray: ByteArray, info: EuqInfo?, simpleRate: Int, channel: Int, bit: Int) =
@@ -39,20 +39,20 @@ object SoxProgramHandler {
 
 
     @JvmStatic
-    external fun exampleConvertByPcmData3(byteArray: ByteArray,type:String?,value:Int):ByteArray
+    external fun ConvertByPcmData(byteArray: ByteArray,type:Int,value:Int):ByteArray
 
-    @JvmStatic
-    external fun exampleConvertByPcmData2(
-        byteArray: ByteArray,
-        type: Int,
-        v1: String?,
-        v2: String?,
-        v3: String?,
-        v4: String?,
-        simpleRate: Int,
-        channel: Int,
-        bit: Int
-    ): ByteArray
+//    @JvmStatic
+//    external fun exampleConvertByPcmData2(
+//        byteArray: ByteArray,
+//        type: Int,
+//        v1: String?,
+//        v2: String?,
+//        v3: String?,
+//        v4: String?,
+//        simpleRate: Int,
+//        channel: Int,
+//        bit: Int
+//    ): ByteArray
 
 
     @RequiresApi(Build.VERSION_CODES.M)
