@@ -28,7 +28,8 @@ class MusicEffectsViewModel : ApiViewModel<INotifyDataSetChanged, MusicEffectsBu
 
     var euqInfoThis = MutableLiveData<EuqInfo?>()
 
-    val musicTypeFlow = MutableStateFlow("")
+    val musicTypeFlow = MutableStateFlow(arrayOf("",""))
+//    val musicTypeValueFlow= MutableStateFlow("")
 
     fun loaderEffectsData() {
 //        getApi().effects.sub { ef ->

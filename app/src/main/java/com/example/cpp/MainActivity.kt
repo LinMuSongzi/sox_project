@@ -186,9 +186,16 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
 
                     lifecycleScope.launch {
                         musicTypeFlow.collect{m->
-                            mNewHandlerSoxAudioProcessor.musicType = m.trim()
+                            mNewHandlerSoxAudioProcessor.musicType = m[0]
+                            mNewHandlerSoxAudioProcessor.valueMaxCount = if(m[1].isEmpty()) 0 else m[1].toInt()
                         }
+//                        musicTypeValueFlow.collect{v->
+//                            mNewHandlerSoxAudioProcessor.valueMaxCount = if(v.isEmpty()) 0 else v.toInt()
+//                        }
                     }
+//                    lifecycleScope.launch {
+//
+//                    }
 
                 }
 

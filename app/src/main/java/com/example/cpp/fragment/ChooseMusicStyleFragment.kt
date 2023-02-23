@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.cpp.databinding.FragmenChooseMusicTypeBinding
 import com.example.cpp.vm.MusicEffectsViewModel
@@ -26,7 +27,15 @@ class ChooseMusicStyleFragment : BaseDialogFragment<FragmenChooseMusicTypeBindin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dataBinding.idAgreeBtn.setOnClickListener {
-            MusicEffectsViewModel::class.java.topInstance(this)?.musicTypeFlow?.value = dataBinding.idEditEt.text.toString()
+            MusicEffectsViewModel::class.java.topInstance(this)?.apply {
+
+                if (dataBinding.idEditEt.text.isEmpty() or dataBinding.idEditValuesEt.text.isEmpty()) {
+                    Toast.makeText(requireContext(), "请输入完整的数值", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                musicTypeFlow.value= arrayOf(dataBinding.idEditEt.text.toString(),dataBinding.idEditValuesEt.text.toString())
+            }
             dismissAllowingStateLoss()
         }
     }

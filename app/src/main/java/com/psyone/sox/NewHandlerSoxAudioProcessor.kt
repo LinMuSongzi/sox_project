@@ -32,6 +32,9 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
         duration = 2000
     }
 
+    var count = 0;
+    var valueMaxCount = 0
+
     override fun onConfigure(inputAudioFormat: AudioProcessor.AudioFormat): AudioProcessor.AudioFormat {
         Log.i(TAG, "onConfigure: inputAudioFormat , $inputAudioFormat")
         return inputAudioFormat.also {
@@ -55,11 +58,20 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
         }
 
         writeWaveFileHeader(readByte, length, length + 44, format.sampleRate, format.channelCount, format.sampleRate * 16 * format.channelCount / 8)
-        Log.i(TAG, "queueInput: musicType = $musicType , animatedValue = ${valueAnimate.animatedValue}")
-        if(!valueAnimate.isStarted){
-            valueAnimate.start()
+
+//        if (!valueAnimate.isStarted) {
+//            valueAnimate.start()
+//        }
+        if (valueMaxCount != 0) {
+            count++
+            if (0 == count % valueMaxCount) {
+                count = 0;
+            }
         }
-        readByte = ConvertByPcmData(readByte, if(musicType.isNullOrEmpty()) -1 else musicType!!.toInt(), valueAnimate.animatedValue as Int)
+        Log.i(TAG, "queueInput: musicType = $musicType , animatedValue = $count")
+        //readByte = ConvertByPcmData(readByte, if (musicType.isNullOrEmpty()) -1 else musicType!!.toInt(), count)
+
+
 //            if (isNativeMusic) {
 ////            Log.i(TAG, "queueInput: 原声 = " + readByte.size)
 //

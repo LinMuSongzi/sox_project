@@ -23,6 +23,16 @@
             android:singleLine="true" />
 
 
+        <EditText
+            android:id="@+id/id_edit_values_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入您的最大值"
+
+            android:inputType="number"
+            android:singleLine="true" />
+
+
         <Button
             android:id="@+id/id_agree_btn"
             android:layout_width="match_parent"
