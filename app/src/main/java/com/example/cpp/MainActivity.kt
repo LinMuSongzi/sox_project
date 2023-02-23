@@ -9,11 +9,13 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.example.cpp.array.ByteArrayEngine
 import com.example.cpp.array.ByteArrayEngine.Companion.PATH_KEY
 import com.psyone.sox.EffectsBean
 import com.example.cpp.databinding.ActivityMainBinding
 import com.example.cpp.databinding.AdapterByteShowBinding
+import com.example.cpp.fragment.ChooseMusicStyleFragment
 import com.example.cpp.fragment.ParaFragment
 import com.example.cpp.vm.MusicEffectsViewModel
 import com.google.android.exoplayer2.Player
@@ -32,11 +34,14 @@ import com.musongzi.core.itf.page.ISource
 import com.psyone.sox.NewHandlerSoxAudioProcessor
 import com.psyone.sox.SoxProgramHandler
 import com.psyone.sox.SoxProgramHandler.exoPlaySImple
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     ISaveStateHandle by LocalSavedHandler() {
 
 
+    private val CHOOSE_TAG_F = "ChooseMusicStyleFragment"
     private val PARA_TAG_F: String = "ParaFragment"
     private val mNewHandlerSoxAudioProcessor = NewHandlerSoxAudioProcessor()
     private var player: Player? = null
@@ -179,13 +184,23 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
                         }
                     }
 
+                    lifecycleScope.launch {
+                        musicTypeFlow.collect{m->
+                            mNewHandlerSoxAudioProcessor.musicType = m.trim()
+                        }
+                    }
 
                 }
 
+                binding.idSetTypeBtn.setOnClickListener {
+                    ChooseMusicStyleFragment().show(supportFragmentManager, CHOOSE_TAG_F)
+                }
 
                 binding.idSetParaBtn.setOnClickListener {
                     ParaFragment().show(supportFragmentManager, PARA_TAG_F)
                 }
+
+
 
 
             }

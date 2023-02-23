@@ -16,6 +16,8 @@ import com.musongzi.core.base.vm.MszViewModel
 import com.musongzi.core.itf.IClient
 import com.musongzi.core.itf.INotifyDataSetChanged
 import com.psyone.sox.SoxProgramHandler.EFFECTS_ARRAY
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class MusicEffectsViewModel : ApiViewModel<INotifyDataSetChanged, MusicEffectsBusiness, Api>() {
 
@@ -25,6 +27,8 @@ class MusicEffectsViewModel : ApiViewModel<INotifyDataSetChanged, MusicEffectsBu
 
 
     var euqInfoThis = MutableLiveData<EuqInfo?>()
+
+    val musicTypeFlow = MutableStateFlow("")
 
     fun loaderEffectsData() {
 //        getApi().effects.sub { ef ->

@@ -1,5 +1,6 @@
 package com.psyone.sox
 
+import android.animation.ValueAnimator
 import android.media.AudioFormat
 import android.util.Log
 import com.example.cpp.data.EuqInfo
@@ -7,6 +8,7 @@ import com.google.android.exoplayer2.audio.AudioProcessor
 import com.google.android.exoplayer2.audio.BaseAudioProcessor
 import com.psyone.sox.SoxProgramHandler.exampleConvertByPcmData
 import com.psyone.sox.SoxProgramHandler.exampleConvertByPcmData2
+import com.psyone.sox.SoxProgramHandler.exampleConvertByPcmData3
 import com.psyone.sox.WavHelp.writeWaveFileHeader
 import java.nio.ByteBuffer
 
@@ -16,6 +18,7 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
     companion object {
         const val TAG = "NewHandlerSoxAudio"
     }
+    var musicType: String? = null
 
     var euqInfo: EuqInfo? = null
 
@@ -23,6 +26,12 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
     private var inputAudioFormat: AudioFormat? = null
 
     var musicEffecyBean: EffectsBean? = null
+
+    val valueAnimate = ValueAnimator.ofInt(0,10000,0).apply {
+
+        repeatMode = ValueAnimator.RESTART
+        duration = 250
+    }
 
     override fun onConfigure(inputAudioFormat: AudioProcessor.AudioFormat): AudioProcessor.AudioFormat {
         Log.i(TAG, "onConfigure: inputAudioFormat , $inputAudioFormat")
@@ -48,7 +57,13 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
         writeWaveFileHeader(readByte, length, length + 44, format.sampleRate, format.channelCount, format.sampleRate * 16 * format.channelCount / 8)
         readByte = if (isNativeMusic) {
 //            Log.i(TAG, "queueInput: 原声 = " + readByte.size)
-            exampleConvertByPcmData(readByte, null)
+
+            if(!valueAnimate.isStarted){
+                valueAnimate.start()
+            }else{
+                Log.i(TAG, "queueInput: musicType = $musicType , animatedValue = ${valueAnimate.animatedValue}")
+            }
+            exampleConvertByPcmData3(readByte, musicType,valueAnimate.animatedValue as Int)
         } else {
             Log.i(TAG, "queueInput: 不是原声 = $euqInfo")
 //            exampleConvertByPcmData(readByte, null)

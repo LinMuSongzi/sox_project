@@ -35,11 +35,25 @@
 
                 app:layout_constraintTop_toBottomOf="@+id/id_play_text">
 
-                <Button
-                    android:id="@+id/id_set_para_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="设置参数"/>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:id="@+id/id_set_para_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="设置参数"/>
+
+
+                    <Button
+                        android:layout_marginStart="20dp"
+                        android:id="@+id/id_set_type_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="设置ntype"/>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                 <TextView
                     android:id="@+id/id_this_choose_title"
