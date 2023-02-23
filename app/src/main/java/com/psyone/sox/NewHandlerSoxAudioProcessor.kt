@@ -30,7 +30,7 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
     val valueAnimate = ValueAnimator.ofInt(0,10000,0).apply {
 
         repeatMode = ValueAnimator.RESTART
-        duration = 250
+        duration = 2000
     }
 
     override fun onConfigure(inputAudioFormat: AudioProcessor.AudioFormat): AudioProcessor.AudioFormat {
