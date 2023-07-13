@@ -260,7 +260,7 @@ class MainActivity : MszFragmentActivity(), INotifyDataSetChanged,
     companion object {
         // Used to load the 'cpp' library on application startup.
         private const val TAG = SoxUtil.TAG
-        val 千山万水_mp3 = "file:///android_asset/" + "千山万水.mp3"
+        val 千山万水_mp3 = "file:///android_asset/千山万水.mp3"
         val dnsRXV0SUH6ASVysADygTuw80Ak462_wav = "file:///android_asset/" + "dnsRXV0SUH6ASVysADygTuw80Ak462.wav"
         //Environment.getExternalStorageDirectory().absolutePath + File.separator + "千山万水.mp3"
 //            Environment.getExternalStorageDirectory().absolutePath + File.separator + "ad7d1d4edff2167163b7303f0fd9f369.wav"

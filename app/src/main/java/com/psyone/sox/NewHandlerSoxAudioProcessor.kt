@@ -69,25 +69,12 @@ class NewHandlerSoxAudioProcessor() : BaseAudioProcessor() {
             }
         }
         Log.i(TAG, "queueInput: musicType = $musicType , animatedValue = $count")
-        //readByte = ConvertByPcmData(readByte, if (musicType.isNullOrEmpty()) -1 else musicType!!.toInt(), count)
-
-
-//            if (isNativeMusic) {
-////            Log.i(TAG, "queueInput: 原声 = " + readByte.size)
-//
-//            if(!valueAnimate.isStarted){
-//                valueAnimate.start()
-//            }else{
-//                Log.i(TAG, "queueInput: musicType = $musicType , animatedValue = ${valueAnimate.animatedValue}")
-//            }
-//            exampleConvertByPcmData3(readByte, musicType,valueAnimate.animatedValue as Int)
-//        } else {
-//            Log.i(TAG, "queueInput: 不是原声 = $euqInfo")
-////            exampleConvertByPcmData(readByte, null)
-//            exampleConvertByPcmData2(readByte, info = euqInfo, simpleRate = format.sampleRate, channel = format.channelCount, bit = 16)
-//        }
-//        readByte = exampleConvertByPcmData2(readByte, musicEffecyBean,format.sampleRate,format.channelCount,16)
-
+        readByte = ConvertByPcmData(readByte, if (musicType.isNullOrEmpty()) -1 else musicType!!.toInt(), count)
+        if (!valueAnimate.isStarted) {
+            valueAnimate.start()
+        } else {
+            Log.i(TAG, "queueInput: musicType = $musicType , animatedValue = ${valueAnimate.animatedValue}")
+        }
 
         val newSize = readByte.size;
         replaceOutputBuffer(newSize - 44).apply {

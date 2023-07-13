@@ -1,13 +1,13 @@
 package com.psyone.sox
 
 import android.content.Context
+import android.media.audiofx.Equalizer
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.example.cpp.data.EuqInfo
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -17,6 +17,7 @@ import com.google.android.exoplayer2.audio.AudioProcessor
 import com.google.android.exoplayer2.audio.AudioSink
 import com.google.android.exoplayer2.audio.DefaultAudioSink
 import com.musongzi.comment.bean.FileBean
+
 
 object SoxProgramHandler {
 
@@ -39,7 +40,7 @@ object SoxProgramHandler {
 
 
     @JvmStatic
-    external fun ConvertByPcmData(byteArray: ByteArray,type:Int,value:Int):ByteArray
+    external fun ConvertByPcmData(byteArray: ByteArray, type: Int, value: Int): ByteArray
 
 //    @JvmStatic
 //    external fun exampleConvertByPcmData2(
@@ -118,6 +119,11 @@ object SoxProgramHandler {
 
     }
 
+    fun addEff() {
+
+
+    }
+
     fun exoPlaySImple(
         context: Context,
         lifecycleOwner: LifecycleOwner,
@@ -125,12 +131,6 @@ object SoxProgramHandler {
         paths: String,
         audioProcessor: AudioProcessor
     ): Player? {
-
-//        var ouputPlayFile: File? = null
-//        if (paths()) {
-//            Toast.makeText(context, "不存在播放文件", Toast.LENGTH_SHORT).show()
-//            return null
-//        }
 
         //1. 创建播放器
         val player = ExoPlayer.Builder(context).setRenderersFactory(object :
@@ -149,7 +149,7 @@ object SoxProgramHandler {
                      * 设置SoxAudioProcessor
                      * 处理音频数据
                      */
-                    .setAudioProcessors(arrayOf(audioProcessor))
+                    //.setAudioProcessors(arrayOf(audioProcessor))
                     .setOffloadMode(
                         if (enableOffload) DefaultAudioSink.OFFLOAD_MODE_ENABLED_GAPLESS_REQUIRED else DefaultAudioSink.OFFLOAD_MODE_DISABLED
                     )
@@ -157,8 +157,10 @@ object SoxProgramHandler {
             }
         }).build()
 
-//        Log.i(TAG, "exoPlaySImple: $path")
-//        for(p in paths) {
+        playEffect(player)
+
+
+        player.repeatMode = Player.REPEAT_MODE_ONE
         player.setMediaItem(MediaItem.fromUri(paths))
 //        }
 
@@ -177,6 +179,34 @@ object SoxProgramHandler {
         })
 
         return player;
+
+    }
+
+    var equalizer: Equalizer? = null
+
+    private fun playEffect(player: ExoPlayer) {
+
+        if (equalizer != null) {
+            equalizer?.release()
+        }
+        if (player.audioSessionId != C.AUDIO_SESSION_ID_UNSET) {
+            equalizer = Equalizer(0, player.audioSessionId)
+
+
+            Log.i(TAG, "onAudioSessionIdChanged: getNumberOfBands() = ${equalizer?.numberOfBands}")
+
+            // 启用均衡器并设置参数
+            equalizer!!.enabled = true
+            // TODO: 设置均衡器的参数，例如频段级别等
+            val minBandLevel = equalizer!!.bandLevelRange[0]
+            val maxBandLevel = equalizer!!.bandLevelRange[1]
+            Log.i(TAG, "onAudioSessionIdChanged: minBandLevel() = $minBandLevel , maxBandLevel = $maxBandLevel")
+            val numOfBands = equalizer!!.numberOfBands.toInt()
+            for (i in 0 until numOfBands) {
+                equalizer!!.setBandLevel(i.toShort(), 0)
+            }
+        }
+
 
     }
 
@@ -286,6 +316,7 @@ object SoxProgramHandler {
                 )
                 list.add(childBean)
             }
+
             "合成效果器" -> {
                 childBean = EffectsBean(
                     c_name = "混合",
@@ -341,6 +372,7 @@ object SoxProgramHandler {
                 )
                 list.add(childBean)
             }
+
             "音量效果器" -> {
                 childBean = EffectsBean(
                     c_name = "压伸",
@@ -394,6 +426,7 @@ object SoxProgramHandler {
                     EffectsBean(c_name = "音频音量", e_name = "vol", content = "Adjust audio volume")
                 list.add(childBean)
             }
+
             "剪辑效果器" -> {
                 childBean = EffectsBean(
                     c_name = "铺垫",
@@ -426,6 +459,7 @@ object SoxProgramHandler {
                 )
                 list.add(childBean)
             }
+
             "混音效果器" -> {
                 childBean = EffectsBean(
                     c_name = "多通道",
@@ -452,6 +486,7 @@ object SoxProgramHandler {
                 )
                 list.add(childBean)
             }
+
             "节奏和音高效果器" -> {
                 childBean = EffectsBean(
                     c_name = "弯曲/扭曲",
@@ -484,6 +519,7 @@ object SoxProgramHandler {
                 )
                 list.add(childBean)
             }
+
             "主线路效果器" -> {
                 childBean = EffectsBean(
                     c_name = "抖动/颤抖",
